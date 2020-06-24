@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.meecos.MainActivity
 import com.example.meecos.R
 
-class HomeFragment : Fragment() {
+class TestFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -17,13 +17,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        var view = inflater.inflate(R.layout.fragment_home, container, false)
-
-        var b = view.findViewById<Button>(R.id.button)
-        b.setOnClickListener {
-            var ac = activity as MainActivity
-            ac.replaceFragment(TestFragment())
-        }
+        var view = inflater.inflate(R.layout.test_fragment, container, false)
         return view
     }
 }
