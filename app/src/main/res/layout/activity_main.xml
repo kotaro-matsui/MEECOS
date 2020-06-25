@@ -51,6 +51,7 @@
                 android:background="@color/clear_gray">
 
                 <Button
+                    android:id="@+id/schedule_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/clear_gray"
@@ -68,6 +69,7 @@
                 android:background="@color/clear_gray">
 
                 <Button
+                    android:id="@+id/meeting_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/clear_gray"
@@ -85,10 +87,29 @@
                 android:background="@color/clear_gray">
 
                 <Button
+                    android:id="@+id/profile_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/clear_gray"
                     android:text="プロフィール"
+                    android:textSize="20dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/clear_gray">
+
+                <Button
+                    android:id="@+id/test_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/clear_gray"
+                    android:text="テスト　HOME 戻る"
                     android:textSize="20dp"
                     android:textColor="@color/white"
                     android:textStyle="bold"/>
