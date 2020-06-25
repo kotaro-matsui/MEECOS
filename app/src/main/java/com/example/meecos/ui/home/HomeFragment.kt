@@ -18,6 +18,7 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         var view = inflater.inflate(R.layout.fragment_home, container, false)
+        setTitle("MEECOS")
         return view
     }
 
