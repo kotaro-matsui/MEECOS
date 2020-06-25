@@ -1,8 +1,6 @@
-package com.example.meecos
+package com.example.meecos.Activity
 
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -14,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import androidx.fragment.app.Fragment
-import com.example.meecos.ui.home.HomeFragment
+import com.example.meecos.R
 
 class MainActivity : AppCompatActivity() {
 
