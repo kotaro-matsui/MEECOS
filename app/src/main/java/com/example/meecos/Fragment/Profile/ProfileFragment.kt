@@ -1,11 +1,11 @@
-package com.example.meecos.ui.Profile
+package com.example.meecos.Fragment.Profile
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.meecos.R
-import com.example.meecos.ui.Base.BaseFragment
+import com.example.meecos.Fragment.Base.BaseFragment
 
 class ProfileFragment : BaseFragment() {
 

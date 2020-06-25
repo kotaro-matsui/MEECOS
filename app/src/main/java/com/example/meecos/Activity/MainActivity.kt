@@ -11,15 +11,14 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
-import android.view.View
 import android.widget.Button
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.example.meecos.R
-import com.example.meecos.ui.MeetingNotes.MeetingNotesFragment
-import com.example.meecos.ui.Profile.ProfileFragment
-import com.example.meecos.ui.Schedule.ScheduleFragment
-import com.example.meecos.ui.home.HomeFragment
+import com.example.meecos.Fragment.MeetingNotes.MeetingNotesFragment
+import com.example.meecos.Fragment.Profile.ProfileFragment
+import com.example.meecos.Fragment.Schedule.ScheduleFragment
+import com.example.meecos.Fragment.home.HomeFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
