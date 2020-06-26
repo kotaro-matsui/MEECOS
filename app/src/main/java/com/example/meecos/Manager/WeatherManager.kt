@@ -162,7 +162,7 @@ class WeatherManager(val activity: Activity) {
 //    },
 //    "weather":[
 //    {
-//        "id":803,
+//        "id":****,
 //        "main":"Clouds",
 //        "description":"brokenclouds",
 //        "icon":"04d"
@@ -194,7 +194,7 @@ class WeatherManager(val activity: Activity) {
 //        "sunset":1593166501
 //    },
 //    "timezone":32400,
-//    "id":1853909,
+//    "id":****,
 //    "name":"Osaka",
 //    "cod":200
 //}
