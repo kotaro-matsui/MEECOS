@@ -25,6 +25,7 @@
                 android:gravity="center"
                 android:text="情報取得中..."
                 android:textSize="20sp"
+                android:textStyle="bold"
                 android:textColor="@color/gray" />
 
             <ImageView
@@ -40,6 +41,7 @@
                 android:gravity="center"
                 android:text="情報取得中..."
                 android:textSize="20sp"
+                android:textStyle="bold"
                 android:textColor="@color/gray" />
 
         </LinearLayout>
