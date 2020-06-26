@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         this.mMeetingButton.setOnClickListener { replaceFragment(MeetingNotesFragment()) }
         this.mProfileButton.setOnClickListener { replaceFragment(ProfileFragment()) }
 
-
         // テストコード　スタート
         this.testButton = findViewById(R.id.test_button)
         this.testButton.setOnClickListener { replaceFragment(HomeFragment()) }

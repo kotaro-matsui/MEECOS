@@ -9,6 +9,7 @@ import com.example.meecos.Dialog.ProgressBarFragment
 import com.example.meecos.R
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Manager.WeatherManager
+import org.json.JSONObject
 
 class HomeFragment : BaseFragment() {
 
@@ -27,21 +28,15 @@ class HomeFragment : BaseFragment() {
     fun sssss () {
         val activity = activity as MainActivity
         val weatherManager = WeatherManager(activity)
-
-        var progress = ProgressBarFragment().newInstance(activity)
-        progress.showDialog()
         if (weatherManager.checkPermission()) {
+            var progress = ProgressBarFragment().newInstance(activity)
+            progress.showDialog()
+
             weatherManager.getLocation(activity, object : WeatherManager.OnCompleteListener {
-                override fun onComplete(success: Boolean, latitude: Double?, longitude: Double?) {
-
-                    // プログレス確認試験用(3秒まち)
-                    Thread.sleep(3000)
-
+                override fun onCompleteWeather(success: Boolean, json: JSONObject) {
                     progress.dismissDialog()
                     if (success) {
-                        var a = latitude
-                        var b = longitude
-                        var c = ""
+
                     }
                 }
             })
