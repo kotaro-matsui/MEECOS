@@ -16,6 +16,13 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.AsyncTask
+import android.widget.ImageView
+import java.io.IOException
+import java.io.InputStream
+import java.net.MalformedURLException
 
 
 class WeatherManager(val activity: Activity) {
@@ -34,14 +41,18 @@ class WeatherManager(val activity: Activity) {
 
         fun onCompleteWeather(
             success: Boolean,
-            json: JSONObject
+            zipStr: String,
+            imageStr: String,
+            temperatureStr: String
         ) {}
     }
 
     interface OnCompleteWeatherListener {
         fun onComplete(
             success: Boolean,
-            json: JSONObject
+            zipStr: String,
+            imageStr: String,
+            temperatureStr: String
         ) {}
     }
 
@@ -101,12 +112,13 @@ class WeatherManager(val activity: Activity) {
 
                 if (location != null) {
                     getWeather(location, object : OnCompleteWeatherListener {
-                        override fun onComplete(success: Boolean, json: JSONObject) {
-
+                        override fun onComplete(success: Boolean, zipStr: String, imageStr: String, temperatureStr: String) {
                             // 試験用
                             listener.onCompleteWeather(
                                 true,
-                                json
+                                zipStr,
+                                imageStr,
+                                temperatureStr
                             )
                         }
                     })
@@ -146,10 +158,23 @@ class WeatherManager(val activity: Activity) {
             val jsonText = buffer.toString()
             val jsonObject = JSONObject(jsonText)
 
-            // 例
-            val _jsonObject = jsonObject.getJSONObject("coord")
+            // 地域名
+            val zipName = jsonObject.getString("name")
 
-            listener.onComplete(true, jsonObject)
+            // 天気アイコンファイル名
+            val weatherJsonArray = jsonObject.getJSONArray("weather")
+            val weatherJson = weatherJsonArray.getJSONObject(0)
+            val imageName = weatherJson.get("icon").toString()
+
+
+            val temperatureJson = jsonObject.getJSONObject("main")
+            val temperature = temperatureJson.getDouble("temp") - 273.15
+
+            listener.onComplete(
+                true,
+                zipName,
+                "$imageName.png",
+                temperature.toInt().toString() + "℃")
         }.start()
     }
 }
@@ -165,12 +190,12 @@ class WeatherManager(val activity: Activity) {
 //        "id":****,
 //        "main":"Clouds",
 //        "description":"brokenclouds",
-//        "icon":"04d"
+//        "icon":"04d"                                              // 天気画像　例)　http://openweathermap.org/img/w/04d.png
 //    }
 //    ],
 //    "base":"stations",
 //    "main"{
-//        "temp":303.62,
+//        "temp":303.62,                                            // 気温 (- 273.15)
 //        "feels_like":308.07,
 //        "temp_min":302.15,
 //        "temp_max":304.82,
@@ -188,13 +213,35 @@ class WeatherManager(val activity: Activity) {
 //    "dt":1593152629,
 //    "sys"{
 //        "type":1,
-//        "id":8032,
+//        "id":******,
 //        "country":"JP",
 //        "sunrise":1593114394,
 //        "sunset":1593166501
 //    },
 //    "timezone":32400,
 //    "id":****,
-//    "name":"Osaka",
+//    "name":"Osaka",                                               // 場所(例は大阪)
 //    "cod":200
 //}
+
+internal class ImageGetTask(private val image: ImageView) : AsyncTask<String, Void, Bitmap>() {
+    override fun doInBackground(vararg params: String): Bitmap? {
+        val image: Bitmap
+        try {
+            val imageUrl = URL(params[0])
+            val imageIs: InputStream
+            imageIs = imageUrl.openStream()
+            image = BitmapFactory.decodeStream(imageIs)
+            return image
+        } catch (e: MalformedURLException) {
+            return null
+        } catch (e: IOException) {
+            return null
+        }
+
+    }
+
+    override fun onPostExecute(result: Bitmap) {
+        image.setImageBitmap(result)
+    }
+}
