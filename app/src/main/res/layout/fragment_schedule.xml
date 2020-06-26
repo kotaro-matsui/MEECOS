@@ -2,6 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/black"
+    android:id="@+id/layout">
 
+    <CalendarView
+        android:id="@+id/calender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"/>
+
+    <Button
+        android:id="@+id/newPlan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="予定作成" />
+
+    <Button
+        android:id="@+id/backRed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="背景赤" />
 </LinearLayout>
