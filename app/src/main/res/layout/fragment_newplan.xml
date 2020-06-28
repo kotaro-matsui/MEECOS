@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/black">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,8 +17,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
+            android:text="開始日時"
             android:textAlignment="center"
-            android:text="開始日時" />
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/startDateBtn"
@@ -27,7 +28,8 @@
             android:layout_weight="0.35"
             android:background="@color/clear"
             android:inputType="date"
-            android:text="6/30"/>
+            android:text="@string/schedule_date"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/startTimeBtn"
@@ -36,7 +38,8 @@
             android:layout_weight="0.35"
             android:background="@color/clear"
             android:inputType="time"
-            android:text="9:00" />
+            android:text="時刻を選択"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 
@@ -52,6 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
             android:textAlignment="center"
+            android:textColor="@color/white"
             android:text="終了日時" />
 
         <Button
@@ -60,8 +64,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.35"
             android:background="@color/clear"
+            android:textColor="@color/white"
             android:inputType="date"
-            android:text="6/30"/>
+            android:text="@string/schedule_date"/>
 
         <Button
             android:id="@+id/endTimeBtn"
@@ -69,8 +74,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.35"
             android:background="@color/clear"
+            android:textColor="@color/white"
             android:inputType="time"
-            android:text="18:00" />
+            android:text="時刻を選択" />
 
     </LinearLayout>
 
@@ -86,11 +92,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
             android:textAlignment="center"
+            android:textColor="@color/white"
             android:text="内容" />
 
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="テストテキスト"
             android:layout_weight="0.7"/>
 
     </LinearLayout>
