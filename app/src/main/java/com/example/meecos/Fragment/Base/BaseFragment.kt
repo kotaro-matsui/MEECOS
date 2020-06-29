@@ -1,4 +1,4 @@
-package com.example.meecos.ui.Base
+package com.example.meecos.Fragment.Base
 
 import androidx.fragment.app.Fragment
 import com.example.meecos.Activity.MainActivity
