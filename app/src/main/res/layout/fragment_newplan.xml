@@ -101,8 +101,16 @@
             android:textColor="@color/white"
             android:text="テストテキスト"
             android:layout_weight="0.7"/>
-
     </LinearLayout>
+
+    <Button
+        android:id="@+id/plan_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:background="@color/black"
+        android:text="登録"
+        android:textColor="@color/white"/>
 
 </LinearLayout>
 

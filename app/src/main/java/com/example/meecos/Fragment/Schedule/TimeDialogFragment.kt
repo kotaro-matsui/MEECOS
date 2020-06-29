@@ -22,7 +22,7 @@ class TimeDialogFragment(val button: Button) : DialogFragment(), TimePickerDialo
             TimePickerDialog.OnTimeSetListener{_, hour, minute ->
                 val inputTime = Calendar.getInstance()
                 inputTime.set(1, 1, 1,hour, minute)
-                val dfInputTime = SimpleDateFormat("hh:mm", Locale.US)
+                val dfInputTime = SimpleDateFormat("HH:mm", Locale.US)
 //              CalendarからStringへ変換
                 val strInputTime = dfInputTime.format(inputTime.time)
 //              DialogFragmentを呼び出したボタンのテキストに時刻をセット
@@ -30,7 +30,8 @@ class TimeDialogFragment(val button: Button) : DialogFragment(), TimePickerDialo
             },
             calendar.get(Calendar.HOUR_OF_DAY),
             calendar.get(Calendar.MINUTE),
-            DateFormat.is24HourFormat(activity))
+            /*DateFormat.is24HourFormat(activity)*/
+            true)
     }
 
     override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {

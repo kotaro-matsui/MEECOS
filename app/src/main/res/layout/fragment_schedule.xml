@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
     android:id="@+id/layout">
@@ -9,17 +10,201 @@
         android:id="@+id/calender"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"/>
+        android:background="@color/white" />
 
-    <Button
+    <ImageButton
         android:id="@+id/newPlan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="予定作成" />
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@color/black"
+        android:src="@drawable/plus"
+        android:scaleType="fitCenter"/>
 
-    <Button
-        android:id="@+id/backRed"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="背景赤" />
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="直近の予定一覧"
+            android:textColor="@color/white"
+            android:textAlignment="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="0dp">
+
+            <TextView
+                android:id="@+id/planDate1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="2020年07月01日"
+                android:textColor="@color/white"
+                android:layout_weight="0.35"/>
+            <TextView
+                android:id="@+id/planStartTime1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="09:00"
+                android:textColor="@color/white"
+                android:layout_weight="0.12"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="~"
+                android:textColor="@color/white"
+                android:layout_weight="0.05"/>
+            <TextView
+                android:id="@+id/planEndTime1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="18:00"
+                android:textColor="@color/white"
+                android:layout_weight="0.12"/>
+            <TextView
+                android:id="@+id/planDetail1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="現地作業"
+                android:textColor="@color/white"
+                android:layout_weight="0.4"/>
+            <Button
+                android:id="@+id/editPlan1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="編"
+                android:textColor="@color/white"
+                android:layout_weight="0.1"/>
+            <Button
+                android:id="@+id/deletePlan1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="削"
+                android:textColor="@color/white"
+                android:layout_weight="0.1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="0dp">
+
+            <TextView
+                android:id="@+id/planDate2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="2020年07月01日"
+                android:textColor="@color/white"
+                android:layout_weight="0.35"/>
+            <TextView
+                android:id="@+id/planStartTime2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="09:00"
+                android:textColor="@color/white"
+                android:layout_weight="0.12"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="~"
+                android:textColor="@color/white"
+                android:layout_weight="0.05"/>
+            <TextView
+                android:id="@+id/planEndTime2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="18:00"
+                android:textColor="@color/white"
+                android:layout_weight="0.12"/>
+            <TextView
+                android:id="@+id/planDetail2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="現地作業"
+                android:textColor="@color/white"
+                android:layout_weight="0.4"/>
+            <Button
+                android:id="@+id/editPlan2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="編"
+                android:textColor="@color/white"
+                android:layout_weight="0.1"/>
+            <Button
+                android:id="@+id/deletePlan2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="削"
+                android:textColor="@color/white"
+                android:layout_weight="0.1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="0dp">
+
+            <TextView
+                android:id="@+id/planDate3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="2020年07月01日"
+                android:textColor="@color/white"
+                android:layout_weight="0.35"/>
+            <TextView
+                android:id="@+id/planStartTime3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="09:00"
+                android:textColor="@color/white"
+                android:layout_weight="0.12"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="~"
+                android:textColor="@color/white"
+                android:layout_weight="0.05"/>
+            <TextView
+                android:id="@+id/planEndTime3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="18:00"
+                android:textColor="@color/white"
+                android:layout_weight="0.12"/>
+            <TextView
+                android:id="@+id/planDetail3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="現地作業"
+                android:textColor="@color/white"
+                android:layout_weight="0.4"/>
+            <Button
+                android:id="@+id/editPlan3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="編"
+                android:textColor="@color/white"
+                android:layout_weight="0.1"/>
+            <Button
+                android:id="@+id/deletePlan3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="削"
+                android:textColor="@color/white"
+                android:layout_weight="0.1"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -1,45 +1,23 @@
 package com.example.meecos.Fragment.Schedule
 
 import android.app.AlertDialog
-import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Bundle
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CalendarView
-import android.widget.ImageButton
-import android.widget.Toast
 import com.example.meecos.Activity.MainActivity
-import com.example.meecos.R
 import com.example.meecos.Fragment.Base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_schedule.*
+import com.example.meecos.R
 
-class ScheduleFragment : BaseFragment() {
-
+class PlanListFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_schedule, container, false)
-        setTitle("スケジュール")
-
-        val calendarView = view.findViewById<CalendarView>(R.id.calender)
-
-        //日付を選択した時にその日付の予定を表示する
-        calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            val trueMonth = month + 1
-            val date = "$year/$trueMonth/$dayOfMonth"
-            Toast.makeText(activity as MainActivity, date, Toast.LENGTH_SHORT).show()
-            (activity as MainActivity).replaceFragment(PlanListFragment())
-        }
-
-        //予定新規作成画面への遷移
-        val newPlanBtn = view.findViewById<ImageButton>(R.id.newPlan)
-        newPlanBtn.setOnClickListener(onBtnClick)
+        var view = inflater.inflate(R.layout.fragment_planlist,container,false)
+        setTitle("2020年○月○日 予定一覧")
 
         //予定編集画面への遷移
         val editPlanBtn1 = view.findViewById<Button>(R.id.editPlan1)
@@ -63,15 +41,11 @@ class ScheduleFragment : BaseFragment() {
         return view
     }
 
-    private val onBtnClick = View.OnClickListener {
+    private val onEditBtnClick = View.OnClickListener {
         (activity as MainActivity).replaceFragment(NewPlanFragment())
     }
 
-    open val onEditBtnClick = View.OnClickListener {
-        (activity as MainActivity).replaceFragment(NewPlanFragment())
-    }
-
-    open val onDeleteBtnClick = View.OnClickListener {
+    private val onDeleteBtnClick = View.OnClickListener {
         AlertDialog.Builder(activity) // FragmentではActivityを取得して生成
             .setTitle("確認")
             .setMessage("削除してもよろしいですか？")
@@ -83,5 +57,4 @@ class ScheduleFragment : BaseFragment() {
             }
             .show()
     }
-
 }

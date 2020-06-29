@@ -40,16 +40,24 @@ class NewPlanFragment : BaseFragment() {
         endTimeBtn.setOnClickListener{
             (activity as MainActivity).timePickDialog(endTimeBtn)
         }
+
+        val submitBtn = view.findViewById<Button>(R.id.plan_submit)
+        submitBtn.setOnClickListener(onSubmitBtnClick)
+
         return view
     }
 
 }
 
-//日付選択ダイアログを表示するメソッドを呼び出すクラス
-private fun MainActivity.datePickDialog(button: Button) {
-    DateDialogFragment(button).show(supportFragmentManager, button::class.java.simpleName)
-}
-//時間選択ダイアログを表示するメソッドを呼び出すクラス
-private fun MainActivity.timePickDialog(button: Button) {
-    TimeDialogFragment(button).show(supportFragmentManager, button::class.java.simpleName)
-}
+    //日付選択ダイアログを表示するメソッドを呼び出すクラス
+    private fun MainActivity.datePickDialog(button: Button) {
+        DateDialogFragment(button).show(supportFragmentManager, button::class.java.simpleName)
+    }
+    //時間選択ダイアログを表示するメソッドを呼び出すクラス
+    private fun MainActivity.timePickDialog(button: Button) {
+        TimeDialogFragment(button).show(supportFragmentManager, button::class.java.simpleName)
+    }
+
+    private val onSubmitBtnClick = View.OnClickListener {
+        //TODO:Realmに新規追加or編集した内容を登録する処理
+    }
