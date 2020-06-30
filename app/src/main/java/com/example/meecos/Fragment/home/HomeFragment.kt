@@ -16,6 +16,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.ProgressBar
+import com.example.meecos.Fragment.Meeting.MeetingRecordFragment
 
 class HomeFragment : BaseFragment() {
 
@@ -24,9 +25,7 @@ class HomeFragment : BaseFragment() {
     var mTemperatureText: TextView? = null
     var mProgress: ProgressBar? = null
 
-    var mRecordingButton: Button? = null
-
-    var mTestText: TextView? = null
+    private var mRecordingButton: Button? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,8 +40,6 @@ class HomeFragment : BaseFragment() {
         this.mTemperatureText = view.findViewById(R.id.temperature_text)
         this.mProgress = view.findViewById(R.id.progress)
         this.mProgress!!.visibility = View.VISIBLE
-
-        this.mTestText = view.findViewById(R.id.test_text)
 
         this.mRecordingButton = view.findViewById(R.id.recording_button)
         this.mRecordingButton!!.setOnClickListener(recordingButtonClickListener)
@@ -80,19 +77,10 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    // TODO: とりあえず対応
+    /**
+     * 議事録画面遷移
+     */
     private val recordingButtonClickListener = View.OnClickListener {
-        (activity as MainActivity).start(this)
-    }
-
-    // TODO: とりあえず対応
-    private var longText: String? = ""
-
-    // TODO: とりあえず対応
-    fun setText(text: String) {
-        Handler(Looper.getMainLooper()).post {
-            this.longText = longText + "\n" + text
-            this.mTestText!!.text = this.longText
-        }
+        replaceFragment(MeetingRecordFragment())
     }
 }

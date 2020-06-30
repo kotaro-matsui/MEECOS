@@ -1,4 +1,4 @@
-package com.example.meecos.Fragment.MeetingNotes
+package com.example.meecos.Fragment.Meeting
 
 import android.os.Bundle
 import android.view.LayoutInflater

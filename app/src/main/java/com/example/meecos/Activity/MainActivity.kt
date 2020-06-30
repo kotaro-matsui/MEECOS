@@ -16,22 +16,17 @@ import android.widget.Button
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.example.meecos.R
-import com.example.meecos.Fragment.MeetingNotes.MeetingNotesFragment
+import com.example.meecos.Fragment.Meeting.MeetingNotesFragment
 import com.example.meecos.Fragment.Profile.ProfileFragment
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import com.example.meecos.Fragment.home.HomeFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import android.speech.RecognizerIntent
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.speech.RecognitionListener
-import android.speech.SpeechRecognizer
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.meecos.Config.PERMISSIONS_CODE
-import android.widget.Toast
 
-class MainActivity : AppCompatActivity(), RecognitionListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var toolbar: Toolbar
@@ -41,10 +36,6 @@ class MainActivity : AppCompatActivity(), RecognitionListener {
     private lateinit var mProfileButton: Button
 
     private lateinit var testButton: Button
-
-    private var sr: SpeechRecognizer? = null
-
-    var home: HomeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,11 +76,6 @@ class MainActivity : AppCompatActivity(), RecognitionListener {
             PERMISSIONS_CODE)
     }
 
-    override fun onPause() {
-        stopListening()
-        super.onPause()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return true
     }
@@ -113,86 +99,6 @@ class MainActivity : AppCompatActivity(), RecognitionListener {
 
     fun setSubTitle (subtitle: String) {
         this.toolbar.title = subtitle
-    }
-
-    // TODO: 音声認識開始 とりあえず対応
-    private fun startListening() {
-        if (sr == null) {
-            sr = SpeechRecognizer.createSpeechRecognizer(this)
-            if (!SpeechRecognizer.isRecognitionAvailable(applicationContext)) {
-                Toast.makeText(
-                    applicationContext,
-                    "音声認識が使えません",
-                    Toast.LENGTH_LONG
-                ).show()
-                finish()
-            }
-            sr!!.setRecognitionListener(this)
-        }
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
-        )
-        sr!!.startListening(intent)
-    }
-
-    // TODO: とりあえず対応
-    fun start(home: HomeFragment) {
-        this.home = home
-        startListening()
-    }
-
-    // TODO: 音声認識終了 とりあえず対応
-    private fun stopListening() {
-        if (sr != null) sr!!.destroy()
-        sr = null
-    }
-
-    // TODO: 音声認識を再開する とりあえず対応
-    private fun restartListeningService() {
-        stopListening()
-        startListening()
-    }
-
-    override fun onBeginningOfSpeech() { }
-
-    override fun onBufferReceived(buffer: ByteArray) {}
-
-    override fun onEndOfSpeech() {}
-
-    override fun onError(error: Int) {
-        var reason = ""
-        when (error) {
-            SpeechRecognizer.ERROR_AUDIO -> reason = "ERROR_AUDIO"
-            SpeechRecognizer.ERROR_CLIENT -> reason = "ERROR_CLIENT"
-            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> reason = "ERROR_INSUFFICIENT_PERMISSIONS"
-            SpeechRecognizer.ERROR_NETWORK -> reason = "ERROR_NETWORK"
-            SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> reason = "ERROR_NETWORK_TIMEOUT"
-            SpeechRecognizer.ERROR_NO_MATCH -> reason = "ERROR_NO_MATCH"
-            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> reason = "ERROR_RECOGNIZER_BUSY"
-            SpeechRecognizer.ERROR_SERVER -> reason = "ERROR_SERVER"
-            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> reason = "ERROR_SPEECH_TIMEOUT"
-        }
-        //Toast.makeText(applicationContext, reason, Toast.LENGTH_SHORT).show()
-        restartListeningService()
-    }
-
-    override fun onEvent(eventType: Int, params: Bundle) {}
-
-    override fun onPartialResults(partialResults: Bundle) {}
-
-    override fun onReadyForSpeech(params: Bundle) {}
-
-    override fun onRmsChanged(rmsdB: Float) {}
-
-    override fun onResults(results: Bundle) {
-        val values = results
-            .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-        if (values!!.size > 0 && this.home != null) {
-            this.home!!.setText(values[0])
-            restartListeningService()
-        }
     }
 }
 
