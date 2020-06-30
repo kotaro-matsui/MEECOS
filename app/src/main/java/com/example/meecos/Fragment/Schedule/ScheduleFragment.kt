@@ -67,11 +67,11 @@ class ScheduleFragment : BaseFragment() {
         (activity as MainActivity).replaceFragment(NewPlanFragment())
     }
 
-    open val onEditBtnClick = View.OnClickListener {
+    private val onEditBtnClick = View.OnClickListener {
         (activity as MainActivity).replaceFragment(NewPlanFragment())
     }
 
-    open val onDeleteBtnClick = View.OnClickListener {
+    private val onDeleteBtnClick = View.OnClickListener {
         AlertDialog.Builder(activity) // FragmentではActivityを取得して生成
             .setTitle("確認")
             .setMessage("削除してもよろしいですか？")

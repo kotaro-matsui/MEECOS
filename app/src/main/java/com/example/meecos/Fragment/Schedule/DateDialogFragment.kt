@@ -65,7 +65,7 @@ class DateDialogFragment(val button: Button) : DialogFragment() {
                         //選択可能な終了日付の下限に指定されている開始日付を設定
                         it.datePicker.minDate = minDate.timeInMillis
                     }else{
-                        //選択可能な終了日付の下限を設定。今回は2019/1/1とする
+                        //選択可能な終了日付の下限を設定。今回は2018/1/1とする
                         minDate.set(2018, 1, 1)
                         it.datePicker.minDate = minDate.timeInMillis
                     }

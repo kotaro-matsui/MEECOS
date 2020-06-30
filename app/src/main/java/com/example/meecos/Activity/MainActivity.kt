@@ -14,14 +14,14 @@ import android.view.Menu
 import android.widget.Button
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import com.example.meecos.R
 import com.example.meecos.Fragment.MeetingNotes.MeetingNotesFragment
+import com.example.meecos.R
 import com.example.meecos.Fragment.Profile.ProfileFragment
-import com.example.meecos.Fragment.Schedule.DateDialogFragment
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import com.example.meecos.Fragment.home.HomeFragment
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_newplan.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +36,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Realmの実装
+        val config = RealmConfiguration.Builder()
+            // .deleteRealmIfMigrationNeeded()
+            .build()
+        Realm.setDefaultConfiguration(config)
+        // Realmの実装終わり
+
+
         setContentView(R.layout.activity_main)
         this.toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -85,5 +94,4 @@ class MainActivity : AppCompatActivity() {
     fun setSubTitle (subtitle: String) {
         this.toolbar.title = subtitle
     }
-
 }
