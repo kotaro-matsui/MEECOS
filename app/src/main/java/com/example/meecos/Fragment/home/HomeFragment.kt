@@ -26,12 +26,14 @@ class HomeFragment : BaseFragment() {
 
     var mRecordingButton: Button? = null
 
+    var mTestText: TextView? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
         setTitle("MEECOS")
 
         this.mZipText = view.findViewById(R.id.zip_text)
@@ -40,10 +42,10 @@ class HomeFragment : BaseFragment() {
         this.mProgress = view.findViewById(R.id.progress)
         this.mProgress!!.visibility = View.VISIBLE
 
+        this.mTestText = view.findViewById(R.id.test_text)
+
         this.mRecordingButton = view.findViewById(R.id.recording_button)
         this.mRecordingButton!!.setOnClickListener(recordingButtonClickListener)
-
-        setCallbackFragment(this)
 
         setWeatherDetails()
         return view
@@ -52,7 +54,7 @@ class HomeFragment : BaseFragment() {
     /**
      * 天気情報をセット
      */
-    fun setWeatherDetails () {
+    private fun setWeatherDetails () {
         val activity = activity as MainActivity
         val weatherManager = WeatherManager(activity)
 
@@ -78,7 +80,19 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+    // TODO: とりあえず対応
     private val recordingButtonClickListener = View.OnClickListener {
-        actionRecognizeSpeech()
+        (activity as MainActivity).start(this)
+    }
+
+    // TODO: とりあえず対応
+    private var longText: String? = ""
+
+    // TODO: とりあえず対応
+    fun setText(text: String) {
+        Handler(Looper.getMainLooper()).post {
+            this.longText = longText + "\n" + text
+            this.mTestText!!.text = this.longText
+        }
     }
 }

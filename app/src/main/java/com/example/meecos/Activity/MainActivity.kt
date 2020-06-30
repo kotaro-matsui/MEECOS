@@ -24,16 +24,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.speech.RecognizerIntent
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Handler
-import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.meecos.Config.PERMISSIONS_CODE
-import com.example.meecos.Config.SimpleRecognizerListener
+import android.widget.Toast
 
-class MainActivity : AppCompatActivity(), SimpleRecognizerListener.SimpleRecognizerResponseListener {
+class MainActivity : AppCompatActivity(), RecognitionListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var toolbar: Toolbar
@@ -44,13 +42,9 @@ class MainActivity : AppCompatActivity(), SimpleRecognizerListener.SimpleRecogni
 
     private lateinit var testButton: Button
 
-    private lateinit var mFragment: Fragment
+    private var sr: SpeechRecognizer? = null
 
-    private lateinit var speechRecognizer: SpeechRecognizer
-    private lateinit var recognizerIntent: Intent
-    private var speechState = false
-
-    private var longText: String = ""
+    var home: HomeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,9 +72,6 @@ class MainActivity : AppCompatActivity(), SimpleRecognizerListener.SimpleRecogni
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        setupSpeechRecognizer()
-        setupRecognizerIntent()
-
         val granted = ContextCompat.checkSelfPermission(this, RECORD_AUDIO)
         if (granted == PackageManager.PERMISSION_GRANTED) {
             return
@@ -94,59 +85,9 @@ class MainActivity : AppCompatActivity(), SimpleRecognizerListener.SimpleRecogni
             PERMISSIONS_CODE)
     }
 
-    private fun setupSpeechRecognizer() {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
-        speechRecognizer.setRecognitionListener(SimpleRecognizerListener(this))
-    }
-
-    private fun setupRecognizerIntent() {
-        recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, false)
-    }
-
-    private fun startListening() {
-        speechState = true
-        speechRecognizer.startListening(recognizerIntent)
-    }
-
-    private fun stopListening() {
-        speechState = false
-        speechRecognizer.stopListening()
-    }
-
-    override fun onResultsResponse(speechText: String) {
-        var text = this.longText + "\n" + speechText
-        this.longText = text
-        startListening()
-    }
-
-    override fun restart() {
-        startListening()
-    }
-
-    fun speech(/* listener: Fragment? */) {
-        if (speechState) {
-            stopListening()
-        } else {
-            startListening()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSIONS_CODE -> {
-                for (i: Int in permissions.indices) {
-                    if ((permissions[i] == ACCESS_FINE_LOCATION) && (grantResults[i] == PackageManager.PERMISSION_GRANTED)) {
-                        Handler(Looper.getMainLooper()).post {
-                            (this.mFragment as HomeFragment).setWeatherDetails()
-                        }
-                    }
-                }
-            }
-        }
+    override fun onPause() {
+        stopListening()
+        super.onPause()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -174,8 +115,84 @@ class MainActivity : AppCompatActivity(), SimpleRecognizerListener.SimpleRecogni
         this.toolbar.title = subtitle
     }
 
-    fun setCallbackFragment (fragmnet: Fragment) {
-        this.mFragment = fragmnet
+    // TODO: 音声認識開始 とりあえず対応
+    private fun startListening() {
+        if (sr == null) {
+            sr = SpeechRecognizer.createSpeechRecognizer(this)
+            if (!SpeechRecognizer.isRecognitionAvailable(applicationContext)) {
+                Toast.makeText(
+                    applicationContext,
+                    "音声認識が使えません",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
+            }
+            sr!!.setRecognitionListener(this)
+        }
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
+        )
+        sr!!.startListening(intent)
+    }
+
+    // TODO: とりあえず対応
+    fun start(home: HomeFragment) {
+        this.home = home
+        startListening()
+    }
+
+    // TODO: 音声認識終了 とりあえず対応
+    private fun stopListening() {
+        if (sr != null) sr!!.destroy()
+        sr = null
+    }
+
+    // TODO: 音声認識を再開する とりあえず対応
+    private fun restartListeningService() {
+        stopListening()
+        startListening()
+    }
+
+    override fun onBeginningOfSpeech() { }
+
+    override fun onBufferReceived(buffer: ByteArray) {}
+
+    override fun onEndOfSpeech() {}
+
+    override fun onError(error: Int) {
+        var reason = ""
+        when (error) {
+            SpeechRecognizer.ERROR_AUDIO -> reason = "ERROR_AUDIO"
+            SpeechRecognizer.ERROR_CLIENT -> reason = "ERROR_CLIENT"
+            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> reason = "ERROR_INSUFFICIENT_PERMISSIONS"
+            SpeechRecognizer.ERROR_NETWORK -> reason = "ERROR_NETWORK"
+            SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> reason = "ERROR_NETWORK_TIMEOUT"
+            SpeechRecognizer.ERROR_NO_MATCH -> reason = "ERROR_NO_MATCH"
+            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> reason = "ERROR_RECOGNIZER_BUSY"
+            SpeechRecognizer.ERROR_SERVER -> reason = "ERROR_SERVER"
+            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> reason = "ERROR_SPEECH_TIMEOUT"
+        }
+        //Toast.makeText(applicationContext, reason, Toast.LENGTH_SHORT).show()
+        restartListeningService()
+    }
+
+    override fun onEvent(eventType: Int, params: Bundle) {}
+
+    override fun onPartialResults(partialResults: Bundle) {}
+
+    override fun onReadyForSpeech(params: Bundle) {}
+
+    override fun onRmsChanged(rmsdB: Float) {}
+
+    override fun onResults(results: Bundle) {
+        val values = results
+            .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        if (values!!.size > 0 && this.home != null) {
+            this.home!!.setText(values[0])
+            restartListeningService()
+        }
     }
 }
 

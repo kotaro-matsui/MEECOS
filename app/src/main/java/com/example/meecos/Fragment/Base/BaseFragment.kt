@@ -14,13 +14,8 @@ open class BaseFragment: Fragment() {
         activity.setTitle(title)
     }
 
-    fun  actionRecognizeSpeech() {
-        var activity = activity as MainActivity
-        activity.speech()
-    }
-
-    fun  setCallbackFragment(fragmnet: Fragment) {
-        var activity = activity as MainActivity
-        activity.setCallbackFragment(fragmnet)
+    fun replaceFragment (fragmnet: Fragment) {
+        val activity = activity as MainActivity
+        activity.replaceFragment(fragmnet)
     }
 }
