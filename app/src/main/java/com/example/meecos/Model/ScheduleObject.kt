@@ -7,7 +7,7 @@ import java.util.*
 
 open class ScheduleObject :RealmObject(){
     @PrimaryKey
-    var id : String? = null
+    var id : Int? = null
     @Required
     var startDate: String? = null
     @Required //RealmではTime型に対応していない為

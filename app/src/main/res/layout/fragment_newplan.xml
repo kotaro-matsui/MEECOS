@@ -156,7 +156,16 @@
         android:id="@+id/textReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="realm表示"
+        android:text="初期化"
         android:textColor="@color/black"/>
+
+    <EditText
+        android:id="@+id/realmId"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:background="@color/white"
+        android:inputType="number"
+        android:hint="IDを入れてください"/>
 </LinearLayout>
 

@@ -8,13 +8,12 @@ import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CalendarView
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.R
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Model.ScheduleObject
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_schedule.*
 
 class ScheduleFragment : BaseFragment() {
@@ -40,6 +39,22 @@ class ScheduleFragment : BaseFragment() {
         //予定新規作成画面への遷移
         val newPlanBtn = view.findViewById<ImageButton>(R.id.newPlan)
         newPlanBtn.setOnClickListener(onBtnClick)
+
+        //直近の予定5件表示する処理
+        lateinit var realm:Realm
+        val latest5plan = realm.where(ScheduleObject::class.java)
+                            .sort("startDate")
+                            .limit(5)
+                            .findAll()
+        latest5plan.forEach{
+            var i = 1
+            val startDate = view.findViewById<TextView>(R.id.planStartDate1)
+            val startTime = view.findViewById<TextView>(R.id.planStartTime1)
+            val endDate = view.findViewById<TextView>(R.id.planEndDate1)
+            val endTime = view.findViewById<TextView>(R.id.planEndTime1)
+            val contents = view.findViewById<TextView>(R.id.planDetail1)
+            i += 1
+        }
 
         //予定編集画面への遷移
         val editPlanBtn1 = view.findViewById<Button>(R.id.editPlan1)

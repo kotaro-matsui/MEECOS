@@ -16,6 +16,7 @@ import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 import io.realm.Realm
+import io.realm.kotlin.where
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_newplan.view.*
 import java.util.*
@@ -36,12 +37,13 @@ class NewPlanFragment : BaseFragment() {
 
         //日付をダイアログで選択できるようにする
         val startDateBtn = view.findViewById<TextView>(R.id.startDateBtn)
-        startDateBtn.setOnClickListener{
-            (activity as MainActivity).datePickDialog(startDateBtn)
-        }
         val endDateBtn = view.findViewById<TextView>(R.id.endDateBtn)
+        startDateBtn.setOnClickListener{
+            (activity as MainActivity).datePickDialog(startDateBtn,view)
+        }
+
         endDateBtn.setOnClickListener{
-            (activity as MainActivity).datePickDialog(endDateBtn)
+            (activity as MainActivity).datePickDialog(endDateBtn,view)
         }
 
         //時間をダイアログで選択できるようにする
@@ -77,8 +79,10 @@ class NewPlanFragment : BaseFragment() {
 
         val realmView = view.findViewById<Button>(R.id.realmView)
         realmView.setOnClickListener{
-            //idがXのレコードをとってくる
-            val id1 = realm.where(ScheduleObject::class.java).equalTo("id", "7").findFirst()
+            val realmId = view.findViewById<EditText>(R.id.realmId)
+            val strId = realmId.text.toString()
+            //入力されたidのレコードをとってくる
+            val id1 = realm.where(ScheduleObject::class.java).equalTo("id", strId.toInt()).findFirst()
             realmText1.setText(id1?.startDate)
             realmText2.setText(id1?.startTime)
             realmText3.setText(id1?.endDate)
@@ -106,8 +110,8 @@ class NewPlanFragment : BaseFragment() {
 
 
     //日付選択ダイアログを表示するメソッドを呼び出すクラス
-    private fun MainActivity.datePickDialog(textView: TextView) {
-        DateDialogFragment(textView).show(supportFragmentManager, textView::class.java.simpleName)
+    private fun MainActivity.datePickDialog(textView: TextView,view:View) {
+        DateDialogFragment(textView,view).show(supportFragmentManager, textView::class.java.simpleName)
     }
     //時間選択ダイアログを表示するメソッドを呼び出すクラス
     private fun MainActivity.timePickDialog(textView: TextView) {
@@ -115,9 +119,16 @@ class NewPlanFragment : BaseFragment() {
     }
 
     private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
-        val id = "7"
+        var maxId = realm.where(ScheduleObject::class.java).max("id")
+        var newId = 1
+        if(maxId != null){
+            newId = maxId.toInt() + 1
+        }
+
+        println("id : $newId")
+
         realm.executeTransaction{ realm ->
-            val obj = realm.createObject(ScheduleObject::class.java!!, id)
+            val obj = realm.createObject(ScheduleObject::class.java!!, newId)
             obj.startDate = startDate
             obj.startTime = startTime
             obj.endDate = endDate
