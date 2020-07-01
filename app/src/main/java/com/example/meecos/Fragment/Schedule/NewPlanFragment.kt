@@ -35,46 +35,36 @@ class NewPlanFragment : BaseFragment() {
         setTitle("予定作成・編集")
 
         //日付をダイアログで選択できるようにする
-        val startDateBtn = view.findViewById<Button>(R.id.startDateBtn)
+        val startDateBtn = view.findViewById<TextView>(R.id.startDateBtn)
         startDateBtn.setOnClickListener{
             (activity as MainActivity).datePickDialog(startDateBtn)
         }
-        val endDateBtn = view.findViewById<Button>(R.id.endDateBtn)
+        val endDateBtn = view.findViewById<TextView>(R.id.endDateBtn)
         endDateBtn.setOnClickListener{
             (activity as MainActivity).datePickDialog(endDateBtn)
         }
 
         //時間をダイアログで選択できるようにする
-        val startTimeBtn = view.findViewById<Button>(R.id.startTimeBtn)
+        val startTimeBtn = view.findViewById<TextView>(R.id.startTimeBtn)
         startTimeBtn.setOnClickListener{
             (activity as MainActivity).timePickDialog(startTimeBtn)
         }
 
-        val endTimeBtn = view.findViewById<Button>(R.id.endTimeBtn)
+        val endTimeBtn = view.findViewById<TextView>(R.id.endTimeBtn)
         endTimeBtn.setOnClickListener{
             (activity as MainActivity).timePickDialog(endTimeBtn)
         }
 
         val contents = view.findViewById<EditText>(R.id.contents)
         val submitBtn = view.findViewById<Button>(R.id.plan_submit)
-        val sb1 : SpannableStringBuilder = startDateBtn.text as SpannableStringBuilder
-        val strStartDate = sb1.toString()
-        val sb2 : SpannableStringBuilder = startDateBtn.text as SpannableStringBuilder
-        val strStartTime = sb2.toString()
-        val sb3 : SpannableStringBuilder = startDateBtn.text as SpannableStringBuilder
-        val strEndDate = sb3.toString()
-        val sb4 : SpannableStringBuilder = startDateBtn.text as SpannableStringBuilder
-        val strEndTime = sb4.toString()
-        val sb5 : SpannableStringBuilder = startDateBtn.text as SpannableStringBuilder
-        val strContents = sb5.toString()
-        
+
         submitBtn.setOnClickListener{
             onSubmitBtnClick(
-                strStartDate,
-                strStartTime,
-                strEndDate,
-                strEndTime,
-                strContents)
+                startDateBtn.text.toString(),
+                startTimeBtn.text.toString(),
+                endDateBtn.text.toString(),
+                endTimeBtn.text.toString(),
+                contents.text.toString())
         }
 
         //Realmの中身表示テスト用
@@ -83,16 +73,17 @@ class NewPlanFragment : BaseFragment() {
         val realmText2 = view.findViewById<TextView>(R.id.realm2)
         val realmText3 = view.findViewById<TextView>(R.id.realm3)
         val realmText4 = view.findViewById<TextView>(R.id.realm4)
+        val realmText5 = view.findViewById<TextView>(R.id.realm5)
 
         val realmView = view.findViewById<Button>(R.id.realmView)
         realmView.setOnClickListener{
             //idがXのレコードをとってくる
-            //Realmに登録はされている気がするが、各フィールドに入力内容が登録されていない。全部初期値（日付を選択
-            val id1 = realm.where(ScheduleObject::class.java).equalTo("id", "5").findFirst()
+            val id1 = realm.where(ScheduleObject::class.java).equalTo("id", "7").findFirst()
             realmText1.setText(id1?.startDate)
             realmText2.setText(id1?.startTime)
             realmText3.setText(id1?.endDate)
-            realmText4.setText(id1?.contents)
+            realmText4.setText(id1?.endTime)
+            realmText5.setText(id1?.contents)
         }
 
         val textReset = view.findViewById<Button>(R.id.textReset)
@@ -102,9 +93,8 @@ class NewPlanFragment : BaseFragment() {
             realmText2.setText("初期化2")
             realmText3.setText("初期化3")
             realmText4.setText("初期化4")
-
+            realmText5.setText("初期化5")
         }
-
         return view
     }
 
@@ -116,16 +106,16 @@ class NewPlanFragment : BaseFragment() {
 
 
     //日付選択ダイアログを表示するメソッドを呼び出すクラス
-    private fun MainActivity.datePickDialog(button: Button) {
-        DateDialogFragment(button).show(supportFragmentManager, button::class.java.simpleName)
+    private fun MainActivity.datePickDialog(textView: TextView) {
+        DateDialogFragment(textView).show(supportFragmentManager, textView::class.java.simpleName)
     }
     //時間選択ダイアログを表示するメソッドを呼び出すクラス
-    private fun MainActivity.timePickDialog(button: Button) {
-        TimeDialogFragment(button).show(supportFragmentManager, button::class.java.simpleName)
+    private fun MainActivity.timePickDialog(textView: TextView) {
+        TimeDialogFragment(textView).show(supportFragmentManager, textView::class.java.simpleName)
     }
 
     private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
-        val id = "3"
+        val id = "7"
         realm.executeTransaction{ realm ->
             val obj = realm.createObject(ScheduleObject::class.java!!, id)
             obj.startDate = startDate

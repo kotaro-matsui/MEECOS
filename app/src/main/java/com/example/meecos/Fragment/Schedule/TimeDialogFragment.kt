@@ -5,13 +5,14 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.widget.Button
+import android.widget.TextView
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
 import com.example.meecos.Activity.MainActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TimeDialogFragment(val button: Button) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+class TimeDialogFragment(val textView: TextView) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -26,7 +27,7 @@ class TimeDialogFragment(val button: Button) : DialogFragment(), TimePickerDialo
 //              CalendarからStringへ変換
                 val strInputTime = dfInputTime.format(inputTime.time)
 //              DialogFragmentを呼び出したボタンのテキストに時刻をセット
-                button.text = strInputTime
+                textView.text = strInputTime
             },
             calendar.get(Calendar.HOUR_OF_DAY),
             calendar.get(Calendar.MINUTE),

@@ -21,23 +21,23 @@
             android:textAlignment="center"
             android:textColor="@color/white" />
 
-        <Button
+        <TextView
             android:id="@+id/startDateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.35"
             android:background="@color/clear"
-            android:inputType="date"
+            android:textAlignment="center"
             android:text="@string/schedule_date"
             android:textColor="@color/white"/>
 
-        <Button
+        <TextView
             android:id="@+id/startTimeBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.35"
             android:background="@color/clear"
-            android:inputType="time"
+            android:textAlignment="center"
             android:text="時刻を選択"
             android:textColor="@color/white" />
 
@@ -58,24 +58,24 @@
             android:textColor="@color/white"
             android:text="終了日時" />
 
-        <Button
+        <TextView
             android:id="@+id/endDateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.35"
             android:background="@color/clear"
             android:textColor="@color/white"
-            android:inputType="date"
+            android:textAlignment="center"
             android:text="@string/schedule_date"/>
 
-        <Button
+        <TextView
             android:id="@+id/endTimeBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.35"
             android:background="@color/clear"
             android:textColor="@color/white"
-            android:inputType="time"
+            android:textAlignment="center"
             android:text="時刻を選択" />
 
     </LinearLayout>
@@ -137,6 +137,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="レルム内容表示4"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/realm5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="レルム内容表示5"
         android:textColor="@color/white"/>
 
     <Button
