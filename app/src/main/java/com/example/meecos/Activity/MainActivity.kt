@@ -18,6 +18,7 @@ import com.example.meecos.Fragment.MeetingNotes.MeetingNotesFragment
 import com.example.meecos.R
 import com.example.meecos.Fragment.Profile.ProfileFragment
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
+import com.example.meecos.Fragment.Schedule.ScheduleFragment2
 import com.example.meecos.Fragment.home.HomeFragment
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         this.mMeetingButton = findViewById(R.id.meeting_button)
         this.mProfileButton = findViewById(R.id.profile_button)
 
-        this.mSchedulebutton.setOnClickListener { replaceFragment(ScheduleFragment()) }
+        this.mSchedulebutton.setOnClickListener { replaceFragment(ScheduleFragment2()) }
         this.mMeetingButton.setOnClickListener { replaceFragment(MeetingNotesFragment()) }
         this.mProfileButton.setOnClickListener { replaceFragment(ProfileFragment()) }
 

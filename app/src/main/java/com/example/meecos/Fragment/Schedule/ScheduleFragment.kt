@@ -144,7 +144,7 @@ class ScheduleFragment : BaseFragment() {
             編集で遷移する際はrecordIdを渡す
             予定作成ページでrecordIdの中身を確認し、初期値（-1)の場合、realm処理はせず、
             0以上の場合はrealmで検索し、結果を各ダイアログのテキストに代入する*/
-        (activity as MainActivity).replaceFragment(NewPlanFragment(recordId))
+        (activity as MainActivity).replaceFragment(NewPlanFragment())
     }
 
     //削除ボタンを押したときの処理
