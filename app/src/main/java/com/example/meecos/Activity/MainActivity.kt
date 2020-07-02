@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
     fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.addToBackStack(null)
         fragmentTransaction.replace(R.id.nav_host_fragment, fragment)
         fragmentTransaction.commit()
         drawer_layout.closeDrawer(GravityCompat.START)

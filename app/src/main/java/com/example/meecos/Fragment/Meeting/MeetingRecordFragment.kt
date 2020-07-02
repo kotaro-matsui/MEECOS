@@ -13,10 +13,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.example.meecos.Dialog.CommonDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.R
 
-class MeetingRecordFragment : BaseFragment(), RecognitionListener {
+class MeetingRecordFragment : BaseFragment(), RecognitionListener, CommonDialogFragment.CommonDialogLisener {
 
     private var sr: SpeechRecognizer? = null
 
@@ -25,6 +26,8 @@ class MeetingRecordFragment : BaseFragment(), RecognitionListener {
 
     private var mStart: Button? = null
     private var mStop: Button? = null
+
+    private var dialog: CommonDialogFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,8 +42,15 @@ class MeetingRecordFragment : BaseFragment(), RecognitionListener {
         this.mStart = view.findViewById(R.id.start)
         this.mStop = view.findViewById(R.id.stop)
 
-        this.mStart!!.setOnClickListener(startClickListener)
-        this.mStop!!.setOnClickListener(stopClickListener)
+        this.mStart!!.setOnClickListener { startListening() }
+        this.mStop!!.setOnClickListener { stopListening() }
+
+        this.dialog = CommonDialogFragment.newInstance(
+            "議事録",
+            "MEECOSが議事録をとります\n[OK]を押すと開始します\n[NO]を押すとHOMEへ戻ります",
+            this
+            )
+        this.dialog!!.show(parentFragmentManager, "dialog")
 
         return view
     }
@@ -50,12 +60,14 @@ class MeetingRecordFragment : BaseFragment(), RecognitionListener {
         stopListening()
     }
 
-    private val startClickListener = View.OnClickListener {
-        startListening()
+    override fun onOkClick() {
+        super.onOkClick()
+        this.dialog!!.dismiss()
     }
 
-    private val stopClickListener = View.OnClickListener {
-        stopListening()
+    override fun onNoClick() {
+        super.onOkClick()
+        this.dialog!!.dismiss()
     }
 
     /**
