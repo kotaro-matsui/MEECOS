@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Fragment.Base.BaseFragment
@@ -21,10 +22,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_newplan.view.*
 import java.util.*
 
-class NewPlanFragment : BaseFragment() {
+class NewPlanFragment() : BaseFragment() {
     //Realmの宣言
     private lateinit var realm:Realm
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -119,21 +119,27 @@ class NewPlanFragment : BaseFragment() {
     }
 
     private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
+        //最新のIDを取得し、+1する
         var maxId = realm.where(ScheduleObject::class.java).max("id")
         var newId = 1
         if(maxId != null){
             newId = maxId.toInt() + 1
         }
 
-        println("id : $newId")
-
-        realm.executeTransaction{ realm ->
-            val obj = realm.createObject(ScheduleObject::class.java!!, newId)
-            obj.startDate = startDate
-            obj.startTime = startTime
-            obj.endDate = endDate
-            obj.endTime = endTime
-            obj.contents = contents
+        try {
+            realm.executeTransaction{ realm ->
+                val obj = realm.createObject(ScheduleObject::class.java!!, newId)
+                obj.startDate = startDate
+                obj.startTime = startTime
+                obj.endDate = endDate
+                obj.endTime = endTime
+                obj.contents = contents
+                Toast.makeText(activity as MainActivity, "登録に成功しました。id:$newId", Toast.LENGTH_SHORT).show()
+            }
+        }catch (e : Exception){
+            Toast.makeText(activity as MainActivity, "登録に失敗しました。id:$newId", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity as MainActivity, e.message, Toast.LENGTH_SHORT).show()
         }
+
     }
 }

@@ -42,7 +42,7 @@ class PlanListFragment : BaseFragment() {
     }
 
     private val onEditBtnClick = View.OnClickListener {
-        (activity as MainActivity).replaceFragment(NewPlanFragment())
+        (activity as MainActivity).replaceFragment(NewPlanFragment("-1"))
     }
 
     private val onDeleteBtnClick = View.OnClickListener {
