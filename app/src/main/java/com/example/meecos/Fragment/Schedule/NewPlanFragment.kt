@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_newplan.view.*
 import java.util.*
 
-class NewPlanFragment() : BaseFragment() {
+class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
     //Realmの宣言
     private lateinit var realm:Realm
     override fun onCreateView(
@@ -34,30 +34,35 @@ class NewPlanFragment() : BaseFragment() {
         realm = Realm.getDefaultInstance()
         val view = inflater.inflate(R.layout.fragment_newplan, container,false)
         setTitle("予定作成・編集")
-
         //日付をダイアログで選択できるようにする
         val startDateBtn = view.findViewById<TextView>(R.id.startDateBtn)
         val endDateBtn = view.findViewById<TextView>(R.id.endDateBtn)
         startDateBtn.setOnClickListener{
             (activity as MainActivity).datePickDialog(startDateBtn,view)
         }
-
         endDateBtn.setOnClickListener{
             (activity as MainActivity).datePickDialog(endDateBtn,view)
         }
-
         //時間をダイアログで選択できるようにする
         val startTimeBtn = view.findViewById<TextView>(R.id.startTimeBtn)
         startTimeBtn.setOnClickListener{
             (activity as MainActivity).timePickDialog(startTimeBtn)
         }
-
         val endTimeBtn = view.findViewById<TextView>(R.id.endTimeBtn)
         endTimeBtn.setOnClickListener{
             (activity as MainActivity).timePickDialog(endTimeBtn)
         }
-
         val contents = view.findViewById<EditText>(R.id.contents)
+
+        //編集の場合、各項目に予め値が入っているようにする
+        if(scheduleObj != null){
+            startDateBtn.text = scheduleObj!!.startDate
+            startTimeBtn.text = scheduleObj!!.startTime
+            endDateBtn.text = scheduleObj!!.endDate
+            endTimeBtn.text = scheduleObj!!.endTime
+            contents.setText(scheduleObj!!.contents)
+        }
+
         val submitBtn = view.findViewById<Button>(R.id.plan_submit)
 
         submitBtn.setOnClickListener{
@@ -67,37 +72,6 @@ class NewPlanFragment() : BaseFragment() {
                 endDateBtn.text.toString(),
                 endTimeBtn.text.toString(),
                 contents.text.toString())
-        }
-
-        //Realmの中身表示テスト用
-
-        val realmText1 = view.findViewById<TextView>(R.id.realm1)
-        val realmText2 = view.findViewById<TextView>(R.id.realm2)
-        val realmText3 = view.findViewById<TextView>(R.id.realm3)
-        val realmText4 = view.findViewById<TextView>(R.id.realm4)
-        val realmText5 = view.findViewById<TextView>(R.id.realm5)
-
-        val realmView = view.findViewById<Button>(R.id.realmView)
-        realmView.setOnClickListener{
-            val realmId = view.findViewById<EditText>(R.id.realmId)
-            val strId = realmId.text.toString()
-            //入力されたidのレコードをとってくる
-            val id1 = realm.where(ScheduleObject::class.java).equalTo("id", strId.toInt()).findFirst()
-            realmText1.setText(id1?.startDate)
-            realmText2.setText(id1?.startTime)
-            realmText3.setText(id1?.endDate)
-            realmText4.setText(id1?.endTime)
-            realmText5.setText(id1?.contents)
-        }
-
-        val textReset = view.findViewById<Button>(R.id.textReset)
-        textReset.setOnClickListener{
-
-            realmText1.setText("初期化1")
-            realmText2.setText("初期化2")
-            realmText3.setText("初期化3")
-            realmText4.setText("初期化4")
-            realmText5.setText("初期化5")
         }
         return view
     }
@@ -119,25 +93,44 @@ class NewPlanFragment() : BaseFragment() {
     }
 
     private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
-        //最新のIDを取得し、+1する
-        var maxId = realm.where(ScheduleObject::class.java).max("id")
-        var newId = 1
-        if(maxId != null){
-            newId = maxId.toInt() + 1
+        var newId = -1
+        //編集でない場合は最新のIDを取得し、+1する
+        if(scheduleObj == null){
+            var maxId = realm.where(ScheduleObject::class.java).max("id")
+            if(maxId != null){
+                newId = maxId.toInt() + 1
+            }
+        }else{
+            newId = scheduleObj!!.id!!
         }
-
         try {
             realm.executeTransaction{ realm ->
-                val obj = realm.createObject(ScheduleObject::class.java!!, newId)
-                obj.startDate = startDate
-                obj.startTime = startTime
-                obj.endDate = endDate
-                obj.endTime = endTime
-                obj.contents = contents
-                Toast.makeText(activity as MainActivity, "登録に成功しました。id:$newId", Toast.LENGTH_SHORT).show()
+                if(scheduleObj == null){
+                    val obj = realm.createObject(ScheduleObject::class.java!!, newId)
+                    obj.startDate = startDate
+                    obj.startTime = startTime
+                    obj.endDate = endDate
+                    obj.endTime = endTime
+                    obj.contents = contents
+                    Toast.makeText(activity as MainActivity, "登録に成功しました。id:$newId", Toast.LENGTH_SHORT).show()
+                }else{
+                    val target = realm.where(ScheduleObject::class.java)
+                        .equalTo("id", scheduleObj!!.id)
+                        .findFirst()
+                    target?.startDate = startDate
+                    target?.startTime = startTime
+                    target?.endDate = endDate
+                    target?.endTime = endTime
+                    target?.contents = contents
+                    Toast.makeText(activity as MainActivity, "変更に成功しました。id:$newId", Toast.LENGTH_SHORT).show()
+                }
             }
         }catch (e : Exception){
-            Toast.makeText(activity as MainActivity, "登録に失敗しました。id:$newId", Toast.LENGTH_SHORT).show()
+            if(scheduleObj == null){
+                Toast.makeText(activity as MainActivity, "登録に失敗しました。id:$newId", Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(activity as MainActivity, "変更に失敗しました。id:$newId", Toast.LENGTH_SHORT).show()
+            }
             Toast.makeText(activity as MainActivity, e.message, Toast.LENGTH_SHORT).show()
         }
 

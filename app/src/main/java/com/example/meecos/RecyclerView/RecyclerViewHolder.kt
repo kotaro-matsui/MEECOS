@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 
 class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -11,12 +12,12 @@ class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     interface ItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
-
-    val itemRecordIdView: TextView = view.findViewById(R.id.recordId1)
-    val itemStartDateView: TextView = view.findViewById(R.id.planStartDate1)
-    val itemStartTimeView: TextView = view.findViewById(R.id.planStartTime1)
-    val itemEndDateView: TextView = view.findViewById(R.id.planEndDate1)
-    val itemEndTimeView: TextView = view.findViewById(R.id.planEndTime1)
-    val itemContentsView: TextView = view.findViewById(R.id.planDetail1)
+    var item: ScheduleObject? = null
+    val itemRecordIdView: TextView = view.findViewById(R.id.recordId)
+    val itemStartDateView: TextView = view.findViewById(R.id.planStartDate)
+    val itemStartTimeView: TextView = view.findViewById(R.id.planStartTime)
+    val itemEndDateView: TextView = view.findViewById(R.id.planEndDate)
+    val itemEndTimeView: TextView = view.findViewById(R.id.planEndTime)
+    val itemContentsView: TextView = view.findViewById(R.id.planDetail)
 
 }

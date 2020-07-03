@@ -1,8 +1,6 @@
 package com.example.meecos.Fragment.Schedule
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +14,11 @@ import com.example.meecos.R
 import com.example.meecos.RecyclerView.RecyclerAdapter
 import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
-import kotlinx.android.synthetic.main.fragment_schedule.*
+import io.realm.RealmResults
 
 class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
     private lateinit var realm:Realm
-
+    private lateinit var latestPlans:RealmResults<ScheduleObject>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +43,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
     //直近の予定5件表示する処理
         //Realmからレコード取得
         realm = Realm.getDefaultInstance()
-        val latest5plan = realm.where(ScheduleObject::class.java)
+        this.latestPlans = realm.where(ScheduleObject::class.java)
             .sort("startDate")
             /*.limit(5)*/
             .findAll()
@@ -54,7 +52,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
         recyclerView.adapter = RecyclerAdapter(
             (activity as MainActivity),
             this,
-            latest5plan)
+            latestPlans)
         recyclerView.layoutManager = LinearLayoutManager(
             (activity as MainActivity),
             LinearLayoutManager.VERTICAL, false)
@@ -64,29 +62,17 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
 
     //各レコードを押した時の処理
     override fun onItemClick(view: View, position: Int) {
+        //押したレコードの内容（ScheduleObject）を取得
+        val scheduleObj = latestPlans[position]
+        /*val mView = view.findViewById<TextView>(R.id.recordId)
+        val recId = mView.text*/
+        println("latestPlans : $scheduleObj")
         //ダイアログを開き、編集と削除が選べるようにする
+        EditOrDeleteFragment(scheduleObj!!).show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
 
     //新規作成画面への遷移
     private val onCreatePlanBtn = View.OnClickListener {
-        (activity as MainActivity).replaceFragment(NewPlanFragment())
-    }
-    //削除ボタンを押したときの処理
-    private val onDeleteBtnClick = View.OnClickListener {
-        AlertDialog.Builder(activity) // FragmentではActivityを取得して生成
-            .setTitle("確認")
-            .setMessage("削除してもよろしいですか？")
-            .setPositiveButton("はい") { _, _ ->
-                realm = Realm.getDefaultInstance()
-                val result = realm.where(ScheduleObject::class.java).equalTo("id","1".toInt()).findAll()
-                realm.executeTransaction{realm ->
-                    result.deleteFromRealm(0)
-                    (activity as MainActivity).replaceFragment(this)
-                }
-            }
-            .setNegativeButton("いいえ") { _, _ ->
-                // TODO:Noが押された時の挙動
-            }
-            .show()
+        (activity as MainActivity).replaceFragment(NewPlanFragment(null))
     }
 }

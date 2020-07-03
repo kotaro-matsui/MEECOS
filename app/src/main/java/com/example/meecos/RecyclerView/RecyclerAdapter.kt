@@ -10,7 +10,6 @@ import io.realm.RealmResults
 
 class RecyclerAdapter(private val context: Context,
                       private val itemClickListener: RecyclerViewHolder.ItemClickListener,
-                      /*private val itemList:List<String>*/
                       private val itemList:RealmResults<ScheduleObject>) : RecyclerView.Adapter<RecyclerViewHolder>() {
 
     private var mRecyclerView : RecyclerView? = null
@@ -29,6 +28,7 @@ class RecyclerAdapter(private val context: Context,
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         holder?.let {
             //ここもかえる
+            it.item = itemList[position]
             it.itemRecordIdView.text = itemList[position]?.id.toString()
             it.itemStartDateView.text = itemList[position]?.startDate
             it.itemStartTimeView.text = itemList[position]?.startTime

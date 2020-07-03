@@ -100,7 +100,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:text="テストテキスト"
+            android:text=""
+            android:hint="内容を入れてください"
+            android:textColorHint="@color/white"
             android:layout_weight="0.7"/>
     </LinearLayout>
 
@@ -113,59 +115,5 @@
         android:text="登録"
         android:textColor="@color/white"/>
 
-
-    <TextView
-        android:id="@+id/realm1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="レルム内容表示１"
-        android:textColor="@color/white"/>
-    <TextView
-        android:id="@+id/realm2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="レルム内容表示2"
-        android:textColor="@color/white"/>
-    <TextView
-        android:id="@+id/realm3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="レルム内容表示3"
-        android:textColor="@color/white"/>
-    <TextView
-        android:id="@+id/realm4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="レルム内容表示4"
-        android:textColor="@color/white"/>
-
-    <TextView
-        android:id="@+id/realm5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="レルム内容表示5"
-        android:textColor="@color/white"/>
-
-    <Button
-        android:id="@+id/realmView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="realm表示"
-        android:textColor="@color/black"/>
-    <Button
-        android:id="@+id/textReset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="初期化"
-        android:textColor="@color/black"/>
-
-    <EditText
-        android:id="@+id/realmId"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:background="@color/white"
-        android:inputType="number"
-        android:hint="IDを入れてください"/>
 </LinearLayout>
 
