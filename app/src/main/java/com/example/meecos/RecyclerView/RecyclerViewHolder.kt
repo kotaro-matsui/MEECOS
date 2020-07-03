@@ -12,6 +12,11 @@ class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun onItemClick(view: View, position: Int)
     }
 
-    val itemTextView: TextView = view.findViewById(R.id.itemTextView)
-    val itemImageView: ImageView = view.findViewById(R.id.itemImageView)
+    val itemRecordIdView: TextView = view.findViewById(R.id.recordId1)
+    val itemStartDateView: TextView = view.findViewById(R.id.planStartDate1)
+    val itemStartTimeView: TextView = view.findViewById(R.id.planStartTime1)
+    val itemEndDateView: TextView = view.findViewById(R.id.planEndDate1)
+    val itemEndTimeView: TextView = view.findViewById(R.id.planEndTime1)
+    val itemContentsView: TextView = view.findViewById(R.id.planDetail1)
+
 }
