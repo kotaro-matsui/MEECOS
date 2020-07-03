@@ -9,7 +9,7 @@ import android.location.LocationManager
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import com.example.meecos.Config.BASE_WEATHER_URL
-import com.example.meecos.Config.WEATHER_APPID
+//import com.example.meecos.Config.WEATHER_APPID
 import com.google.android.gms.location.*
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -110,30 +110,34 @@ class WeatherManager(val activity: Activity) {
 
                 fusedLocationClient.removeLocationUpdates(this)
 
-                if (location != null) {
-                    getWeather(location, object : OnCompleteWeatherListener {
-                        override fun onComplete(success: Boolean, zipStr: String, imageStr: String, temperatureStr: String) {
-                            // 試験用
-                            listener.onCompleteWeather(
-                                true,
-                                zipStr,
-                                imageStr,
-                                temperatureStr
-                            )
-                        }
-                    })
-                }
+//                if (location != null) {
+////                    getWeather(location, object : OnCompleteWeatherListener {
+////                        override fun onComplete(success: Boolean, zipStr: String, imageStr: String, temperatureStr: String) {
+////                            // 試験用
+////                            listener.onCompleteWeather(
+////                                true,
+////                                "osaka",
+////                                "04d",
+////                                "40"
+////                            )
+////                        }
+////                    })
+////                }
             }
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        try {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        } catch (e : SecurityException) {
+
+        }
     }
 
-    fun getWeather(locattion: Location, listener: OnCompleteWeatherListener) {
+    fun getWeather(locattion: Location, listener: WeatherManager.OnCompleteWeatherListener) {
         Thread {
             val requestURL = BASE_WEATHER_URL + "weather?lat=" +
                     locattion.latitude + "8&lon=" +
-                    locattion.longitude + WEATHER_APPID
+                    locattion.longitude + ""
 
             var connection: HttpURLConnection? = null
             var reader: BufferedReader? = null
