@@ -11,7 +11,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.meecos.Config.*
-import com.example.meecos.Model.BaseModel
 import com.example.meecos.R
 
 class CommonDialogFragment : DialogFragment() {
