@@ -15,6 +15,7 @@ import com.example.meecos.RecyclerView.RecyclerAdapter
 import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
+import java.lang.Exception
 
 class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
     private lateinit var realm:Realm
@@ -66,8 +67,8 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
         val scheduleObj = latestPlans[position]
         /*val mView = view.findViewById<TextView>(R.id.recordId)
         val recId = mView.text*/
-        println("latestPlans : $scheduleObj")
         //ダイアログを開き、編集と削除が選べるようにする
+
         EditOrDeleteFragment(scheduleObj!!).show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
 

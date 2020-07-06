@@ -3,6 +3,8 @@ package com.example.meecos.Fragment.Schedule
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -24,32 +26,35 @@ class EditOrDeleteFragment(var scheduleObj :ScheduleObject?):DialogFragment() {
             .setItems(CHOOSE){dialog, which ->
                 when(CHOOSE[which]){
                     "編集" -> (activity as MainActivity).replaceFragment(NewPlanFragment(scheduleObj))
-                    "削除" ->
+                    "削除" ->{
                         AlertDialog.Builder(activity) // FragmentではActivityを取得して生成
                             .setTitle("確認")
                             .setMessage("削除してもよろしいですか？")
                             .setPositiveButton("はい") { _, _ ->
-                                realm = Realm.getDefaultInstance()
-                                val target = realm.where(ScheduleObject::class.java)
-                                    .equalTo("id", scheduleObj?.id)
-                                    .findAll()
-                                println("schduleObj.id =" + scheduleObj?.id)
-                                try {
-                                    // トランザクションして削除
-                                    realm.executeTransaction{
-                                        target.deleteFromRealm(0)
-                                        Toast.makeText(activity as MainActivity, "削除に成功しました。", Toast.LENGTH_SHORT).show()
+                                Handler(Looper.getMainLooper()).post {
+                                    realm = Realm.getDefaultInstance()
+                                    val target = realm.where(ScheduleObject::class.java)
+                                        .equalTo("id", scheduleObj?.id)
+                                        .findAll()
+                                    println("schduleObj.id =" + scheduleObj?.id)
+                                    try {
+                                        // トランザクションして削除
+                                        realm.executeTransaction{
+                                            target.deleteFromRealm(0)
+                                        }
+                                        //コールバックする→(activity as MainActivity).replaceFragment(ScheduleFragment())
+                                        //Toast.makeText(activity, "削除に成功しました。", Toast.LENGTH_SHORT).show()
+                                    }catch (e:Exception){
+                                        println("e.message = " + e.message)
+                                        //Toast.makeText(activity, "削除に失敗しました。", Toast.LENGTH_SHORT).show()
                                     }
-                                }catch (e:Exception){
-                                    println("e.message = " + e.message)
-                                    /*Toast.makeText(activity as MainActivity, "削除に失敗しました。", Toast.LENGTH_SHORT).show()*/
                                 }
-
                             }
                             .setNegativeButton("いいえ") { _, _ ->
                                 // TODO:Noが押された時の挙動
                             }
                             .show()
+                    }
                 }
             }
             .setNegativeButton("閉じる", null)
@@ -57,4 +62,7 @@ class EditOrDeleteFragment(var scheduleObj :ScheduleObject?):DialogFragment() {
             return dialog
     }
 
+    private fun deleteRecord(){
+
+    }
 }
