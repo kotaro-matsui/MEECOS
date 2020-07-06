@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.CalendarView
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
@@ -15,7 +17,7 @@ import com.example.meecos.RecyclerView.RecyclerAdapter
 import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
-import java.lang.Exception
+
 
 class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
     private lateinit var realm:Realm
@@ -68,12 +70,13 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
         /*val mView = view.findViewById<TextView>(R.id.recordId)
         val recId = mView.text*/
         //ダイアログを開き、編集と削除が選べるようにする
-
         EditOrDeleteFragment(scheduleObj!!).show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
+
     }
 
     //新規作成画面への遷移
     private val onCreatePlanBtn = View.OnClickListener {
         (activity as MainActivity).replaceFragment(NewPlanFragment(null))
     }
+
 }
