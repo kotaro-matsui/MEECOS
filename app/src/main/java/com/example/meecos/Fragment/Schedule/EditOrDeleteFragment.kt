@@ -1,10 +1,14 @@
 package com.example.meecos.Fragment.Schedule
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Model.ScheduleObject
 import io.realm.Realm
@@ -12,15 +16,37 @@ import io.realm.Realm
 
 class EditOrDeleteFragment(var scheduleObj :ScheduleObject?):DialogFragment(){
     lateinit var realm :Realm
+    // 呼び出し元のActivityを保持する
+    private lateinit var listener: EditOrDeleteListener
 
+    // コールバック用インタフェース。呼び出し元で実装する
+    interface EditOrDeleteListener {
+        fun onDialogPositiveClick(dialog: DialogFragment,isError:Boolean)
+        fun onDialogNegativeClick(dialog: DialogFragment)
+    }
+    
     companion object{
         // リストに表示する値を配列として定義
         val CHOOSE = arrayOf("編集", "削除")
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            // 呼び出し元のActivityを変数listenerで保持する
+            listener = context as EditOrDeleteListener
+        } catch (e: ClassCastException) {
+            // 呼び出し元のActivityでコールバックインタフェースを実装していない場合
+            throw ClassCastException((context.toString() +
+                    " must implement NoticeDialogListener"))
+        }
+    }
+
+    //TODO:予定削除した時にAlarmからも削除する処理を実装する
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        //削除に失敗したかどうかの変数
+        var isError = false
         val dialog = AlertDialog.Builder(requireContext())
-            /*.setTitle("タイトル")*/
             .setItems(CHOOSE){dialog, which ->
                 when(CHOOSE[which]){
                     "編集" -> (activity as MainActivity).replaceFragment(NewPlanFragment(scheduleObj))
@@ -39,15 +65,14 @@ class EditOrDeleteFragment(var scheduleObj :ScheduleObject?):DialogFragment(){
                                     realm.executeTransaction{
                                         target.deleteFromRealm(0)
                                     }
-                                    //コールバックする→(activity as MainActivity).replaceFragment(ScheduleFragment())
-                                    //Toast.makeText(activity, "削除に成功しました。", Toast.LENGTH_SHORT).show()
                                 }catch (e:Exception){
                                     println("e.message = " + e.message)
-                                    //Toast.makeText(activity, "削除に失敗しました。", Toast.LENGTH_SHORT).show()
+                                    isError = true
                                 }
+                                listener.onDialogPositiveClick(this,isError)
                             }
                             .setNegativeButton("いいえ") { _, _ ->
-                                // TODO:Noが押された時の挙動
+                                listener.onDialogNegativeClick(this)
                             }
                             .show()
                     }
@@ -56,5 +81,12 @@ class EditOrDeleteFragment(var scheduleObj :ScheduleObject?):DialogFragment(){
             .setNegativeButton("閉じる", null)
             .create()
             return dialog
+    }
+
+    fun submit(inputText: String?) {
+        val target = targetFragment ?: return
+        val data = Intent()
+        data.putExtra(Intent.EXTRA_TEXT, inputText)
+        target.onActivityResult(targetRequestCode, Activity.RESULT_OK, data)
     }
 }

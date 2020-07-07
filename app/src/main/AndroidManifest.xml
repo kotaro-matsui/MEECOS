@@ -5,6 +5,7 @@
     <!--マイクと記憶装置を使う許可-->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:name=".Application.MyApplication"
@@ -27,6 +28,8 @@
         <activity android:name=".Activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <receiver android:name=".Fragment.Schedule.AlarmNotification"
+            android:process=":remote" />
     </application>
 
 </manifest>

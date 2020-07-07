@@ -34,6 +34,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         realm = Realm.getDefaultInstance()
         val view = inflater.inflate(R.layout.fragment_newplan, container,false)
         setTitle("予定作成・編集")
+
         //日付をダイアログで選択できるようにする
         val startDateBtn = view.findViewById<TextView>(R.id.startDateBtn)
         val endDateBtn = view.findViewById<TextView>(R.id.endDateBtn)
@@ -43,6 +44,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         endDateBtn.setOnClickListener{
             (activity as MainActivity).datePickDialog(endDateBtn,view)
         }
+
         //時間をダイアログで選択できるようにする
         val startTimeBtn = view.findViewById<TextView>(R.id.startTimeBtn)
         startTimeBtn.setOnClickListener{
@@ -52,6 +54,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         endTimeBtn.setOnClickListener{
             (activity as MainActivity).timePickDialog(endTimeBtn)
         }
+
         val contents = view.findViewById<EditText>(R.id.contents)
 
         //編集の場合、各項目に予め値が入っているようにする
@@ -92,6 +95,8 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         TimeDialogFragment(textView).show(supportFragmentManager, textView::class.java.simpleName)
     }
 
+    /*TODO:予定の登録、または変更した時にAlarmに登録する処理を実装する
+    * 削除する時の対象を判断する為に、Alarm登録時に格納する変数もScheduleObjectに必要？*/
     private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
         var newId = -1
         //編集でない場合は最新のIDを取得し、+1する

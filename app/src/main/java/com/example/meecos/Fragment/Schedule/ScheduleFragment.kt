@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.CalendarView
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
@@ -18,10 +19,10 @@ import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
 
-
-class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
+class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener{
     private lateinit var realm:Realm
     private lateinit var latestPlans:RealmResults<ScheduleObject>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,7 +36,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
         calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
             val trueMonth = month + 1
             val date = "$year/$trueMonth/$dayOfMonth"
-            Toast.makeText(activity as MainActivity, date, Toast.LENGTH_SHORT).show()
+            //TODO:DBを日付で検索し、該当したデータをPlanListFragmentに渡す
             (activity as MainActivity).replaceFragment(PlanListFragment())
         }
 
@@ -67,16 +68,12 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener {
     override fun onItemClick(view: View, position: Int) {
         //押したレコードの内容（ScheduleObject）を取得
         val scheduleObj = latestPlans[position]
-        /*val mView = view.findViewById<TextView>(R.id.recordId)
-        val recId = mView.text*/
         //ダイアログを開き、編集と削除が選べるようにする
         EditOrDeleteFragment(scheduleObj!!).show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
-
     }
 
     //新規作成画面への遷移
     private val onCreatePlanBtn = View.OnClickListener {
         (activity as MainActivity).replaceFragment(NewPlanFragment(null))
     }
-
 }
