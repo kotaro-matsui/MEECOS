@@ -25,7 +25,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.meecos.Config.PERMISSIONS_CODE
-import com.example.meecos.Fragment.Customer.CustomerListFragment
+import com.example.meecos.Fragment.Customer.CustomerFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         this.mProfileButton = findViewById(R.id.profile_button)
 
         this.mScheduleButton.setOnClickListener { replaceFragment(ScheduleFragment()) }
-        this.mCustomerButton.setOnClickListener { replaceFragment(CustomerListFragment()) }  // todo　replaceFragment(CustomerFragment())　に変更
+        this.mCustomerButton.setOnClickListener { replaceFragment(CustomerFragment()) }
         this.mMeetingButton.setOnClickListener { replaceFragment(MeetingNotesFragment()) }
         this.mProfileButton.setOnClickListener { replaceFragment(ProfileFragment()) }
 
