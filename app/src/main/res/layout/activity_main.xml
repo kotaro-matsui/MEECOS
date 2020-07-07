@@ -87,6 +87,24 @@
                 android:background="@color/clear_gray">
 
                 <Button
+                    android:id="@+id/customer_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/clear_gray"
+                    android:text="客先リスト"
+                    android:textSize="20dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/clear_gray">
+
+                <Button
                     android:id="@+id/profile_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

@@ -25,13 +25,15 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.meecos.Config.PERMISSIONS_CODE
+import com.example.meecos.Fragment.Customer.CustomerListFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var toolbar: Toolbar
 
-    private lateinit var mSchedulebutton: Button
+    private lateinit var mScheduleButton: Button
+    private lateinit var mCustomerButton: Button
     private lateinit var mMeetingButton: Button
     private lateinit var mProfileButton: Button
 
@@ -43,11 +45,13 @@ class MainActivity : AppCompatActivity() {
         this.toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        this.mSchedulebutton = findViewById(R.id.schedule_button)
+        this.mScheduleButton = findViewById(R.id.schedule_button)
+        this.mCustomerButton = findViewById(R.id.customer_button)
         this.mMeetingButton = findViewById(R.id.meeting_button)
         this.mProfileButton = findViewById(R.id.profile_button)
 
-        this.mSchedulebutton.setOnClickListener { replaceFragment(ScheduleFragment()) }
+        this.mScheduleButton.setOnClickListener { replaceFragment(ScheduleFragment()) }
+        this.mCustomerButton.setOnClickListener { replaceFragment(CustomerListFragment()) }  // todo　replaceFragment(CustomerFragment())　に変更
         this.mMeetingButton.setOnClickListener { replaceFragment(MeetingNotesFragment()) }
         this.mProfileButton.setOnClickListener { replaceFragment(ProfileFragment()) }
 
