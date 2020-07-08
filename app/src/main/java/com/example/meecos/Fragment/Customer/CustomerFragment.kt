@@ -7,16 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ExpandableListView
 import android.widget.SimpleExpandableListAdapter
-import androidx.lifecycle.ViewModel
+import android.widget.TextView
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.*
-import io.realm.annotations.PrimaryKey
-import io.realm.annotations.Required
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import io.realm.RealmList as RealmList
@@ -31,6 +29,7 @@ class CustomerFragment : BaseFragment()  {
         ArrayList<HashMap<String, String>>()
 
     // 子項目のリスト
+    // 子項目は会社名となる
     private val childData =
         ArrayList<ArrayList<HashMap<String, String>>>()
 
@@ -40,76 +39,138 @@ class CustomerFragment : BaseFragment()  {
         savedInstanceState: Bundle?
     ): View? {
 
-        Realm.init(this.activity)
+        val view = inflater.inflate(R.layout.fragment_customer, container, false)
+
+        val createCustomerButton = view.findViewById<Button>(R.id.create_customer)
+        createCustomerButton.setOnClickListener(onButtonClick)
+
+        Realm.init(requireActivity().applicationContext)
         val config = RealmConfiguration.Builder()
-            // .deleteRealmIfMigrationNeeded()
+            .deleteRealmIfMigrationNeeded()
             .build()
         Realm.setDefaultConfiguration(config)
 
         //initしたインスタンスをとってくる
         realm = Realm.getDefaultInstance()
-        // トランザクションして登録
-        try {
-            realm.executeTransaction { realm ->
-                val obj1 = realm.createObject(CustomerObject::class.java, getNextUserId())
-                obj1.customerName = "秋田駅"
-                obj1.customerName = "アキタエキ"
 
-                val obj2 = realm.createObject(CustomerObject::class.java, getNextUserId())
-                obj2.customerName = "青森駅"
-                obj2.customerName = "アオモリエキ"
+        val customerCount = view.findViewById<TextView>(R.id.customer_count)
+        customerCount.text = getNextUserId().toString()
 
-                val obj3 = realm.createObject(CustomerObject::class.java, getNextUserId())
-                obj3.customerName = "淡路駅"
-
-                val obj4 = realm.createObject(CustomerObject::class.java, getNextUserId())
-                obj4.customerName = "神戸駅"
-                obj4.customerName = "アカシエキ"
-            }
-        } catch (e: Exception) {
-            println("exceptionエラー:" + e.message)
-        } catch (r: RuntimeException) {
-            println("runtime exceptionエラー:" + r.message)
-        }
-
-        val view = inflater.inflate(R.layout.fragment_customer, container, false)
+//        // トランザクションして登録
+//        try {
+//            realm.executeTransaction { realm ->
+//
+//                realm.deleteAll()
+//
+//                val obj1 = realm.createObject(CustomerObject::class.java, 1)
+//                obj1.name = "秋田駅"
+//                obj1.howToRead = "アキタエキ"
+//
+//                val obj2 = realm.createObject(CustomerObject::class.java, 2)
+//                obj2.name = "大阪駅"
+//                obj2.howToRead = "オオサカエキ"
+//
+//                val obj3 = realm.createObject(CustomerObject::class.java, 3)
+//                obj3.name = "淡路駅"
+//                obj3.howToRead = "アワジエキ"
+//
+//                val obj4 = realm.createObject(CustomerObject::class.java, 4)
+//                obj4.name = "神戸駅"
+//                obj4.howToRead = "コウベエキ"
+//
+//                val obj5 = realm.createObject(CustomerObject::class.java, 5)
+//                obj5.name = "茨木駅"
+//                obj5.howToRead = "イバラキエキ"
+//
+//                val obj6 = realm.createObject(CustomerObject::class.java, 6)
+//                obj6.name = "香川駅"
+//                obj6.howToRead = "カガワエキ"
+//
+//                val obj7 = realm.createObject(CustomerObject::class.java, 7)
+//                obj7.name = "北九州駅"
+//                obj7.howToRead = "キタキュウシュウエキ"
+//
+//                val obj8 = realm.createObject(CustomerObject::class.java, 8)
+//                obj8.name = "愛媛駅"
+//
+//
+//            }
+//
+//        } catch (e: Exception) {
+//            println("exceptionエラー:" + e.message)
+//        } catch (r: RuntimeException) {
+//            println("runtime exceptionエラー:" + r.message)
+//        }
 
         // 親項目の作成
-        val initialsList = listOf("あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ", "#")
-        createGroupList(initialsList)
+        val groupList = listOf("あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ", "#")
+        createGroupList(groupList)
 
         // 子項目の作成
 
-        // 各文字から始まるデータをソートしたlistをrealmから取り出す
-        // 現状、1つの子項目ごとにcreateChildList(list)の呼び出しが必要
-
-        val testResults = realm.where(CustomerObject::class.java).equalTo("customerHowToRead", "アキタエキ").findFirst()
-
-        val aStartResults = realm.where(CustomerObject::class.java).beginsWith("customerHowToRead", "ア").sort("customerHowToRead", Sort.DESCENDING).findAll()
-
-        val aStartList = RealmList<CustomerObject>()
-        aStartList.addAll(aStartResults.subList(0, aStartResults.size))
+        /**
+         * 各文字から始まるデータをソートした結果をrealmから取り出す
+         * 各行ごとに取り出したデータを並べ、listにする
+         * 行ごとに子項目をセットするための createChildList(list)を呼び出す　
+         */
 
         // あ行リスト
-        val aList = mutableListOf<String>()
-        aList.add("あああああ")
-        aList.add(testResults!!.customerName)
-        aList.add("ああいああ")
-//        for (item in aStartList) {
-//            aList.add(item.customerName)
-//        }
-        createChildList(aList)
+        val aStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ア").sort("howToRead", Sort.DESCENDING).findAll()
+        val iStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "イ").sort("howToRead", Sort.DESCENDING).findAll()
+        val uStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ウ").sort("howToRead", Sort.DESCENDING).findAll()
+        val eStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "エ").sort("howToRead", Sort.DESCENDING).findAll()
+        val oStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "オ").sort("howToRead", Sort.DESCENDING).findAll()
+
+        val aLineStartRealmList = RealmList<CustomerObject>()
+        aLineStartRealmList.addAll(aStartResults.subList(0, aStartResults.size))
+        aLineStartRealmList.addAll(iStartResults.subList(0, iStartResults.size))
+        aLineStartRealmList.addAll(uStartResults.subList(0, uStartResults.size))
+        aLineStartRealmList.addAll(eStartResults.subList(0, eStartResults.size))
+        aLineStartRealmList.addAll(oStartResults.subList(0, oStartResults.size))
+
+        val aLineStartList = mutableListOf<String>()
+        for (customer in aLineStartRealmList) {
+            aLineStartList.add(customer.name)
+        }
+        createChildList(aLineStartList)
 
         // か行リスト
-        val kList = mutableListOf<String>()
-        createChildList(kList)
+        val kaStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "カ").sort("howToRead", Sort.DESCENDING).findAll()
+        val kiStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "キ").sort("howToRead", Sort.DESCENDING).findAll()
+        val kuStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ク").sort("howToRead", Sort.DESCENDING).findAll()
+        val keStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ケ").sort("howToRead", Sort.DESCENDING).findAll()
+        val koStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "コ").sort("howToRead", Sort.DESCENDING).findAll()
+
+        val kLineStartRealmList = RealmList<CustomerObject>()
+        kLineStartRealmList.addAll(kaStartResults.subList(0, kaStartResults.size))
+        kLineStartRealmList.addAll(kiStartResults.subList(0, kiStartResults.size))
+        kLineStartRealmList.addAll(kuStartResults.subList(0, kuStartResults.size))
+        kLineStartRealmList.addAll(keStartResults.subList(0, keStartResults.size))
+        kLineStartRealmList.addAll(koStartResults.subList(0, koStartResults.size))
+
+        val kLineStartList = mutableListOf<String>()
+        for (customer in kLineStartRealmList) {
+            kLineStartList.add(customer.name)
+        }
+        createChildList(kLineStartList)
+
+        val allResults = realm.where(CustomerObject::class.java).findAll()
+
+        val allRealmList = RealmList<CustomerObject>()
+        allRealmList.addAll(allResults.subList(0, allResults.size))
 
         // さ行リスト
         val sList  = mutableListOf<String>()
+        for (customer in allRealmList) {
+            sList.add(customer.name)
+        }
         createChildList(sList)
 
         // た行リスト
         val tList  = mutableListOf<String>()
+        for (customer in allRealmList) {
+            tList.add(customer.howToRead)
+        }
         createChildList(tList)
 
         // な行リスト
@@ -190,24 +251,13 @@ class CustomerFragment : BaseFragment()  {
 
         }
 
+        setTitle("客先リスト")
         return view
 
     }
 
-    /**
-     * UserのプライマリキーuserIdの最大値をインクリメントした値を取得する。
-     * Userが1度も作成されていなければ1を取得する。
-     */
-    private fun getNextUserId(): Int {
-        // 初期化
-        var nextUserId = 1
-        // userIdの最大値を取得
-        val maxUserId: Number? = realm.where(CustomerObject::class.java).max("id")
-        // 1度もデータが作成されていない場合はNULLが返ってくるため、NULLチェックをする
-        if (maxUserId != null) {
-            nextUserId = maxUserId.toInt() + 1
-        }
-        return nextUserId
+    private val onButtonClick = View.OnClickListener {
+        replaceFragment(CreateCustomerFragment())
     }
 
     // 引数にした文字で親項目を作成
@@ -244,6 +294,22 @@ class CustomerFragment : BaseFragment()  {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
 
+    }
+
+    /**
+     * UserのプライマリキーuserIdの最大値をインクリメントした値を取得する。
+     * Userが1度も作成されていなければ1を取得する。
+     */
+    private fun getNextUserId(): Int {
+        // 初期化
+        var nextUserId = 1
+        // userIdの最大値を取得
+        val maxUserId: Number? = realm.where(CustomerObject::class.java).max("id")
+        // 1度もデータが作成されていない場合はNULLが返ってくるため、NULLチェックをする
+        if (maxUserId != null) {
+            nextUserId = maxUserId.toInt() + 1
+        }
+        return nextUserId
     }
 
     override fun onDestroy() {
