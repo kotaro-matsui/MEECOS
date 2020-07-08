@@ -4,11 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
+import io.realm.RealmResults
 
 class RecyclerAdapter(private val context: Context,
                       private val itemClickListener: RecyclerViewHolder.ItemClickListener,
-                      private val itemList:List<String>) : RecyclerView.Adapter<RecyclerViewHolder>() {
+                      private val itemList:RealmResults<ScheduleObject>) : RecyclerView.Adapter<RecyclerViewHolder>() {
 
     private var mRecyclerView : RecyclerView? = null
 
@@ -24,9 +26,15 @@ class RecyclerAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
-        holder.let {
-            it.itemTextView.text = itemList[position]
-            it.itemImageView.setImageResource(R.mipmap.ic_launcher)
+        holder?.let {
+            //ここもかえる
+            it.item = itemList[position]
+            it.itemRecordIdView.text = itemList[position]?.id.toString()
+            it.itemStartDateView.text = itemList[position]?.startDate
+            it.itemStartTimeView.text = itemList[position]?.startTime
+            it.itemEndDateView.text = itemList[position]?.endDate
+            it.itemEndTimeView.text = itemList[position]?.endTime
+            it.itemContentsView.text = itemList[position]?.contents
         }
     }
 

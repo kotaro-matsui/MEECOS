@@ -1,33 +1,43 @@
 package com.example.meecos.Activity
 
 import android.Manifest.permission.*
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import android.view.Menu
-import android.widget.Button
-import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
-import com.example.meecos.R
+import com.example.meecos.Config.PERMISSIONS_CODE
 import com.example.meecos.Fragment.Meeting.MeetingNotesFragment
 import com.example.meecos.Fragment.Profile.ProfileFragment
+import com.example.meecos.Fragment.Schedule.AlarmNotification
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import com.example.meecos.Fragment.home.HomeFragment
+import com.example.meecos.R
+import com.google.android.material.navigation.NavigationView
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.example.meecos.Config.PERMISSIONS_CODE
 import com.example.meecos.Fragment.Customer.CustomerFragment
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var toolbar: Toolbar
@@ -39,8 +49,21 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var testButton: Button
 
+    //通知テスト用
+    private var am: AlarmManager? = null
+    private var pending: PendingIntent? = null
+    private val requestCode = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Realmの実装
+        val config = RealmConfiguration.Builder()
+            // .deleteRealmIfMigrationNeeded()
+            .build()
+        Realm.setDefaultConfiguration(config)
+        // Realmの実装終わり
+
         setContentView(R.layout.activity_main)
         this.toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -78,8 +101,62 @@ class MainActivity : AppCompatActivity() {
                 ACCESS_FINE_LOCATION,
                 ACCESS_NETWORK_STATE),
             PERMISSIONS_CODE)
-    }
 
+    ///////////////////////////////////////////通知テスト//////////////////////////////////////
+        val buttonStart: Button = findViewById(R.id.pushBtn)
+        //pushBtn(通知テスト）を押した時に処理開始
+        buttonStart.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = System.currentTimeMillis()
+            // 1sec
+            calendar.add(Calendar.SECOND, 1)
+            val intent = Intent(applicationContext, AlarmNotification::class.java)
+            intent.putExtra("RequestCode", requestCode)
+            pending = PendingIntent.getBroadcast(
+                applicationContext, requestCode, intent, 0
+            )
+
+            // アラームをセットする
+            am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (am != null) {
+                am!!.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis, pending
+                )
+
+                // トーストで設定されたことをを表示
+                Toast.makeText(
+                    applicationContext,
+                    "alarm start", Toast.LENGTH_SHORT
+                ).show()
+                Log.d("debug", "start")
+            }
+        }
+
+        // アラームの取り消し
+        val buttonCancel: Button = findViewById(R.id.cancelBtn)
+        buttonCancel.setOnClickListener{
+            val indent = Intent(applicationContext, AlarmNotification::class.java)
+            val pending = PendingIntent.getBroadcast(
+                applicationContext, requestCode, indent, 0
+            )
+
+            // アラームを解除する
+            val am =
+                this@MainActivity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (am != null) {
+                am.cancel(pending)
+                Toast.makeText(
+                    applicationContext,
+                    "alarm cancel", Toast.LENGTH_SHORT
+                ).show()
+                Log.d("debug", "cancel")
+            } else {
+                Log.d("debug", "null")
+            }
+        }
+        ///////////////////////////////////////////ここまで通知テスト//////////////////////////////////////
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return true
     }
@@ -105,5 +182,20 @@ class MainActivity : AppCompatActivity() {
     fun setSubTitle (subtitle: String) {
         this.toolbar.title = subtitle
     }
+
+    /*//スケジュール画面で予定削除した時にEditOrDeleteFragmentから渡される処理
+    override fun onDialogPositiveClick(dialog: DialogFragment,isError:Boolean) {
+        if(isError){
+            Toast.makeText(this, "削除に失敗しました。", Toast.LENGTH_SHORT).show()
+        }else{
+            replaceFragment(ScheduleFragment())
+            Toast.makeText(this, "削除に成功しました。", Toast.LENGTH_SHORT).show()
+        }
+    }
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        TODO("Not yet implemented")
+    }*/
+
+
 }
 

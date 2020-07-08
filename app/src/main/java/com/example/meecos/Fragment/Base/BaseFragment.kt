@@ -2,6 +2,7 @@ package com.example.meecos.Fragment.Base
 
 import androidx.fragment.app.Fragment
 import com.example.meecos.Activity.MainActivity
+import java.util.*
 
 open class BaseFragment: Fragment() {
 
@@ -10,8 +11,8 @@ open class BaseFragment: Fragment() {
         activity.setTitle(title)
     }
 
-    fun replaceFragment (fragmnet: Fragment) {
+    fun replaceFragment (fragment: Fragment) {
         val activity = activity as MainActivity
-        activity.replaceFragment(fragmnet)
+        activity.replaceFragment(fragment)
     }
 }
