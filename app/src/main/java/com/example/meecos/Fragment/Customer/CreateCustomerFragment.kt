@@ -1,26 +1,21 @@
 package com.example.meecos.Fragment.Customer
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
+import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
-import io.realm.RealmConfiguration
 
-
-class CreateCustomerFragment : BaseFragment(), TextWatcher {
+class CreateCustomerFragment : BaseFragment() {
 
     lateinit var realm : Realm
-
-    private var customerName = "会社名"
-    private var customerHowToRead = "読み方"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,21 +24,46 @@ class CreateCustomerFragment : BaseFragment(), TextWatcher {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_create_customer, container, false)
 
-        val createButton = view.findViewById<Button>(R.id.create_c)
-        createButton.setOnClickListener(onButtonClick)
-
         val cName = view.findViewById<EditText>(R.id.customer_name)
-        cName.addTextChangedListener(this)
 
         val cHowToRead = view.findViewById<EditText>(R.id.customer_how_to_read)
-        cHowToRead.addTextChangedListener(this)
+
+        val createButton = view.findViewById<Button>(R.id.customer_submit)
+        createButton.setOnClickListener{onButtonClick(cName.text.toString(), cHowToRead.text.toString())}
 
         setTitle("客先登録")
         return view
     }
 
-    private val onButtonClick = View.OnClickListener {
-        realmCreate()
+    private fun onButtonClick(cName: String, cHowToRead: String) {
+
+//        Realm.init(requireActivity().applicationContext)
+//        val config = RealmConfiguration.Builder()
+//            .deleteRealmIfMigrationNeeded()
+//            .build()
+//        Realm.setDefaultConfiguration(config)
+
+        //initしたインスタンスをとってくる
+        realm = Realm.getDefaultInstance()
+
+        // トランザクションして登録
+        try {
+
+            realm.executeTransaction { realm ->
+
+                val obj = realm.createObject(CustomerObject::class.java, getNextUserId())
+                obj.name = cName
+                obj.howToRead = cHowToRead
+
+                Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT).show()
+
+            }
+
+        } catch (e: Exception) {
+            println("exceptionエラー:" + e.message)
+        } catch (r: RuntimeException) {
+            println("runtime exceptionエラー:" + r.message)
+        }
     }
 
     /**
@@ -60,70 +80,6 @@ class CreateCustomerFragment : BaseFragment(), TextWatcher {
             nextUserId = maxUserId.toInt() + 1
         }
         return nextUserId
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//        if (requireView().id == R.id.customer_name) {
-////
-////        } else if (requireView().id == R.id.customer_how_to_read) {
-////
-////        }
-
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//        if (requireView().id == R.id.customer_name) {
-//
-//        } else if (requireView().id == R.id.customer_how_to_read) {
-//
-//        }
-
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-
-        val inputStr = s.toString()
-
-        if (requireView().id == R.id.customer_name) {
-            customerName = inputStr
-        } else if (requireView().id == R.id.customer_how_to_read) {
-            customerHowToRead = inputStr
-        }
-
-//        when (requireView().id) {
-//            R.id.customer_name -> customerName = inputStr
-//            R.id.customer_how_to_read -> customerHowToRead = inputStr
-//        }
-
-    }
-
-    private fun realmCreate(){
-
-        Realm.init(requireActivity().applicationContext)
-        val config = RealmConfiguration.Builder()
-            .deleteRealmIfMigrationNeeded()
-            .build()
-        Realm.setDefaultConfiguration(config)
-
-        //initしたインスタンスをとってくる
-        realm = Realm.getDefaultInstance()
-
-        // トランザクションして登録
-        try {
-
-            realm.executeTransaction { realm ->
-
-                val obj = realm.createObject(CustomerObject::class.java, getNextUserId())
-                obj.name = customerName
-                obj.howToRead = customerHowToRead
-
-            }
-
-        } catch (e: Exception) {
-            println("exceptionエラー:" + e.message)
-        } catch (r: RuntimeException) {
-            println("runtime exceptionエラー:" + r.message)
-        }
     }
 
 }

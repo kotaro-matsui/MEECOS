@@ -9,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ExpandableListView
+import android.widget.ImageButton
 import android.widget.SimpleExpandableListAdapter
-import android.widget.TextView
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
@@ -41,66 +41,17 @@ class CustomerFragment : BaseFragment()  {
 
         val view = inflater.inflate(R.layout.fragment_customer, container, false)
 
-        val createCustomerButton = view.findViewById<Button>(R.id.create_customer)
-        createCustomerButton.setOnClickListener(onButtonClick)
+        val newCustomerButton = view.findViewById<ImageButton>(R.id.new_customer)
+        newCustomerButton.setOnClickListener(onButtonClick)
 
-        Realm.init(requireActivity().applicationContext)
-        val config = RealmConfiguration.Builder()
-            .deleteRealmIfMigrationNeeded()
-            .build()
-        Realm.setDefaultConfiguration(config)
+//        Realm.init(requireActivity().applicationContext)
+//        val config = RealmConfiguration.Builder()
+//            .deleteRealmIfMigrationNeeded()
+//            .build()
+//        Realm.setDefaultConfiguration(config)
 
         //initしたインスタンスをとってくる
         realm = Realm.getDefaultInstance()
-
-        val customerCount = view.findViewById<TextView>(R.id.customer_count)
-        customerCount.text = getNextUserId().toString()
-
-//        // トランザクションして登録
-//        try {
-//            realm.executeTransaction { realm ->
-//
-//                realm.deleteAll()
-//
-//                val obj1 = realm.createObject(CustomerObject::class.java, 1)
-//                obj1.name = "秋田駅"
-//                obj1.howToRead = "アキタエキ"
-//
-//                val obj2 = realm.createObject(CustomerObject::class.java, 2)
-//                obj2.name = "大阪駅"
-//                obj2.howToRead = "オオサカエキ"
-//
-//                val obj3 = realm.createObject(CustomerObject::class.java, 3)
-//                obj3.name = "淡路駅"
-//                obj3.howToRead = "アワジエキ"
-//
-//                val obj4 = realm.createObject(CustomerObject::class.java, 4)
-//                obj4.name = "神戸駅"
-//                obj4.howToRead = "コウベエキ"
-//
-//                val obj5 = realm.createObject(CustomerObject::class.java, 5)
-//                obj5.name = "茨木駅"
-//                obj5.howToRead = "イバラキエキ"
-//
-//                val obj6 = realm.createObject(CustomerObject::class.java, 6)
-//                obj6.name = "香川駅"
-//                obj6.howToRead = "カガワエキ"
-//
-//                val obj7 = realm.createObject(CustomerObject::class.java, 7)
-//                obj7.name = "北九州駅"
-//                obj7.howToRead = "キタキュウシュウエキ"
-//
-//                val obj8 = realm.createObject(CustomerObject::class.java, 8)
-//                obj8.name = "愛媛駅"
-//
-//
-//            }
-//
-//        } catch (e: Exception) {
-//            println("exceptionエラー:" + e.message)
-//        } catch (r: RuntimeException) {
-//            println("runtime exceptionエラー:" + r.message)
-//        }
 
         // 親項目の作成
         val groupList = listOf("あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ", "#")
@@ -115,18 +66,18 @@ class CustomerFragment : BaseFragment()  {
          */
 
         // あ行リスト
-        val aStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ア").sort("howToRead", Sort.DESCENDING).findAll()
-        val iStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "イ").sort("howToRead", Sort.DESCENDING).findAll()
-        val uStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ウ").sort("howToRead", Sort.DESCENDING).findAll()
-        val eStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "エ").sort("howToRead", Sort.DESCENDING).findAll()
-        val oStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "オ").sort("howToRead", Sort.DESCENDING).findAll()
+        val aLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "ア")
+                .or().beginsWith("howToRead", "イ")
+                .or().beginsWith("howToRead", "ウ")
+                .or().beginsWith("howToRead", "エ")
+                .or().beginsWith("howToRead", "オ")
+                .sort("howToRead")
+                .findAll()
 
         val aLineStartRealmList = RealmList<CustomerObject>()
-        aLineStartRealmList.addAll(aStartResults.subList(0, aStartResults.size))
-        aLineStartRealmList.addAll(iStartResults.subList(0, iStartResults.size))
-        aLineStartRealmList.addAll(uStartResults.subList(0, uStartResults.size))
-        aLineStartRealmList.addAll(eStartResults.subList(0, eStartResults.size))
-        aLineStartRealmList.addAll(oStartResults.subList(0, oStartResults.size))
+        aLineStartRealmList.addAll(aLineStartResults.subList(0, aLineStartResults.size))
 
         val aLineStartList = mutableListOf<String>()
         for (customer in aLineStartRealmList) {
@@ -135,18 +86,23 @@ class CustomerFragment : BaseFragment()  {
         createChildList(aLineStartList)
 
         // か行リスト
-        val kaStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "カ").sort("howToRead", Sort.DESCENDING).findAll()
-        val kiStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "キ").sort("howToRead", Sort.DESCENDING).findAll()
-        val kuStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ク").sort("howToRead", Sort.DESCENDING).findAll()
-        val keStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "ケ").sort("howToRead", Sort.DESCENDING).findAll()
-        val koStartResults = realm.where(CustomerObject::class.java).beginsWith("howToRead", "コ").sort("howToRead", Sort.DESCENDING).findAll()
+        val kLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "カ")
+                .or().beginsWith("howToRead", "ガ")
+                .or().beginsWith("howToRead", "キ")
+                .or().beginsWith("howToRead", "ギ")
+                .or().beginsWith("howToRead", "ク")
+                .or().beginsWith("howToRead", "グ")
+                .or().beginsWith("howToRead", "ケ")
+                .or().beginsWith("howToRead", "ゲ")
+                .or().beginsWith("howToRead", "コ")
+                .or().beginsWith("howToRead", "ゴ")
+                .sort("howToRead")
+                .findAll()
 
         val kLineStartRealmList = RealmList<CustomerObject>()
-        kLineStartRealmList.addAll(kaStartResults.subList(0, kaStartResults.size))
-        kLineStartRealmList.addAll(kiStartResults.subList(0, kiStartResults.size))
-        kLineStartRealmList.addAll(kuStartResults.subList(0, kuStartResults.size))
-        kLineStartRealmList.addAll(keStartResults.subList(0, keStartResults.size))
-        kLineStartRealmList.addAll(koStartResults.subList(0, koStartResults.size))
+        kLineStartRealmList.addAll(kLineStartResults.subList(0, kLineStartResults.size))
 
         val kLineStartList = mutableListOf<String>()
         for (customer in kLineStartRealmList) {
@@ -154,52 +110,197 @@ class CustomerFragment : BaseFragment()  {
         }
         createChildList(kLineStartList)
 
-        val allResults = realm.where(CustomerObject::class.java).findAll()
-
-        val allRealmList = RealmList<CustomerObject>()
-        allRealmList.addAll(allResults.subList(0, allResults.size))
-
         // さ行リスト
-        val sList  = mutableListOf<String>()
-        for (customer in allRealmList) {
-            sList.add(customer.name)
+        val sLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "サ")
+                .or().beginsWith("howToRead", "ザ")
+                .or().beginsWith("howToRead", "シ")
+                .or().beginsWith("howToRead", "ジ")
+                .or().beginsWith("howToRead", "ス")
+                .or().beginsWith("howToRead", "ズ")
+                .or().beginsWith("howToRead", "セ")
+                .or().beginsWith("howToRead", "ゼ")
+                .or().beginsWith("howToRead", "ソ")
+                .or().beginsWith("howToRead", "ゾ")
+                .sort("howToRead")
+                .findAll()
+
+        val sLineStartRealmList = RealmList<CustomerObject>()
+        sLineStartRealmList.addAll(sLineStartResults.subList(0, sLineStartResults.size))
+
+        val sLineStartList = mutableListOf<String>()
+        for (customer in sLineStartRealmList) {
+            sLineStartList.add(customer.name)
         }
-        createChildList(sList)
+        createChildList(sLineStartList)
 
         // た行リスト
-        val tList  = mutableListOf<String>()
-        for (customer in allRealmList) {
-            tList.add(customer.howToRead)
+        val tLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "タ")
+                .or().beginsWith("howToRead", "ダ")
+                .or().beginsWith("howToRead", "チ")
+                .or().beginsWith("howToRead", "ヂ")
+                .or().beginsWith("howToRead", "ツ")
+                .or().beginsWith("howToRead", "ヅ")
+                .or().beginsWith("howToRead", "テ")
+                .or().beginsWith("howToRead", "デ")
+                .or().beginsWith("howToRead", "ト")
+                .or().beginsWith("howToRead", "ド")
+                .sort("howToRead")
+                .findAll()
+
+        val tLineStartRealmList = RealmList<CustomerObject>()
+        tLineStartRealmList.addAll(tLineStartResults.subList(0, tLineStartResults.size))
+
+        val tLineStartList = mutableListOf<String>()
+        for (customer in tLineStartRealmList) {
+            tLineStartList.add(customer.name)
         }
-        createChildList(tList)
+        createChildList(tLineStartList)
 
         // な行リスト
-        val nList = mutableListOf<String>()
-        createChildList(nList)
+        val nLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "ナ")
+                .or().beginsWith("howToRead", "ニ")
+                .or().beginsWith("howToRead", "ヌ")
+                .or().beginsWith("howToRead", "ネ")
+                .or().beginsWith("howToRead", "ノ")
+                .sort("howToRead")
+                .findAll()
+
+        val nLineStartRealmList = RealmList<CustomerObject>()
+        nLineStartRealmList.addAll(nLineStartResults.subList(0, nLineStartResults.size))
+
+        val nLineStartList = mutableListOf<String>()
+        for (customer in nLineStartRealmList) {
+            nLineStartList.add(customer.name)
+        }
+        createChildList(nLineStartList)
 
         // は行リスト
-        val hList = mutableListOf<String>()
-        createChildList(hList)
+        val hLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "ハ")
+                .or().beginsWith("howToRead", "バ")
+                .or().beginsWith("howToRead", "パ")
+                .or().beginsWith("howToRead", "ヒ")
+                .or().beginsWith("howToRead", "ビ")
+                .or().beginsWith("howToRead", "ピ")
+                .or().beginsWith("howToRead", "フ")
+                .or().beginsWith("howToRead", "ブ")
+                .or().beginsWith("howToRead", "プ")
+                .or().beginsWith("howToRead", "ヘ")
+                .or().beginsWith("howToRead", "ベ")
+                .or().beginsWith("howToRead", "ペ")
+                .or().beginsWith("howToRead", "ホ")
+                .or().beginsWith("howToRead", "ボ")
+                .or().beginsWith("howToRead", "ポ")
+                .sort("howToRead")
+                .findAll()
+
+        val hLineStartRealmList = RealmList<CustomerObject>()
+        hLineStartRealmList.addAll(hLineStartResults.subList(0, hLineStartResults.size))
+
+        val hLineStartList = mutableListOf<String>()
+        for (customer in hLineStartRealmList) {
+            hLineStartList.add(customer.name)
+        }
+        createChildList(hLineStartList)
 
         // ま行リスト
-        val mList = mutableListOf<String>()
-        createChildList(mList)
+        val mLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "マ")
+                .or().beginsWith("howToRead", "ミ")
+                .or().beginsWith("howToRead", "ム")
+                .or().beginsWith("howToRead", "メ")
+                .or().beginsWith("howToRead", "モ")
+                .sort("howToRead")
+                .findAll()
 
-        // や行リスト
-        val yList = mutableListOf<String>()
-        createChildList(yList)
+        val mLineStartRealmList = RealmList<CustomerObject>()
+        mLineStartRealmList.addAll(mLineStartResults.subList(0, mLineStartResults.size))
+
+        val mLineStartList = mutableListOf<String>()
+        for (customer in mLineStartRealmList) {
+            mLineStartList.add(customer.name)
+        }
+        createChildList(mLineStartList)
+
+        /// や行リスト
+        val yLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "ヤ")
+                .or().beginsWith("howToRead", "ユ")
+                .or().beginsWith("howToRead", "ヨ")
+                .sort("howToRead")
+                .findAll()
+
+        val yLineStartRealmList = RealmList<CustomerObject>()
+        yLineStartRealmList.addAll(yLineStartResults.subList(0, yLineStartResults.size))
+
+        val yLineStartList = mutableListOf<String>()
+        for (customer in yLineStartRealmList) {
+            yLineStartList.add(customer.name)
+        }
+        createChildList(yLineStartList)
 
         // ら行リスト
-        val rList = mutableListOf<String>()
-        createChildList(rList)
+        val rLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "ラ")
+                .or().beginsWith("howToRead", "リ")
+                .or().beginsWith("howToRead", "ル")
+                .or().beginsWith("howToRead", "レ")
+                .or().beginsWith("howToRead", "ロ")
+                .sort("howToRead")
+                .findAll()
+
+        val rLineStartRealmList = RealmList<CustomerObject>()
+        rLineStartRealmList.addAll(rLineStartResults.subList(0, rLineStartResults.size))
+
+        val rLineStartList = mutableListOf<String>()
+        for (customer in rLineStartRealmList) {
+            rLineStartList.add(customer.name)
+        }
+        createChildList(rLineStartList)
 
         // わ行リスト
-        val wList = mutableListOf<String>()
-        createChildList(wList)
+        val wLineStartResults =
+            realm.where(CustomerObject::class.java)
+                .beginsWith("howToRead", "ワ")
+                .or().beginsWith("howToRead", "ヲ")
+                .or().beginsWith("howToRead", "ン")
+                .sort("howToRead")
+                .findAll()
+
+        val wLineStartRealmList = RealmList<CustomerObject>()
+        wLineStartRealmList.addAll(wLineStartResults.subList(0, wLineStartResults.size))
+
+        val wLineStartList = mutableListOf<String>()
+        for (customer in wLineStartRealmList) {
+            wLineStartList.add(customer.name)
+        }
+        createChildList(wLineStartList)
 
         // その他(#)リスト
-        val zList = mutableListOf<String>()
-        createChildList(zList)
+        val isNotReadableResults =
+            realm.where(CustomerObject::class.java)
+                .isEmpty("howToRead")
+                .sort("id")
+                .findAll()
+
+        val isNotReadableRealmList = RealmList<CustomerObject>()
+        isNotReadableRealmList.addAll(isNotReadableResults.subList(0, isNotReadableResults.size))
+
+        val isNotReadableList = mutableListOf<String>()
+        for (customer in isNotReadableRealmList) {
+            isNotReadableList.add(customer.name)
+        }
+        createChildList(isNotReadableList)
 
         // 親リスト、子リストを含んだAdapterを生成
         val adapter = SimpleExpandableListAdapter(
@@ -242,6 +343,8 @@ class CustomerFragment : BaseFragment()  {
             AlertDialog.Builder(this.activity)
                 .setTitle(item["name"].toString())
                 .setMessage("経路を検索しますか？")
+                .setNegativeButton("cancel")  {_, _ ->
+                }
                 .setPositiveButton("OK") { _, _ ->
                     connectGoogleMap(item["name"].toString())
                 }
@@ -294,22 +397,6 @@ class CustomerFragment : BaseFragment()  {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
 
-    }
-
-    /**
-     * UserのプライマリキーuserIdの最大値をインクリメントした値を取得する。
-     * Userが1度も作成されていなければ1を取得する。
-     */
-    private fun getNextUserId(): Int {
-        // 初期化
-        var nextUserId = 1
-        // userIdの最大値を取得
-        val maxUserId: Number? = realm.where(CustomerObject::class.java).max("id")
-        // 1度もデータが作成されていない場合はNULLが返ってくるため、NULLチェックをする
-        if (maxUserId != null) {
-            nextUserId = maxUserId.toInt() + 1
-        }
-        return nextUserId
     }
 
     override fun onDestroy() {
