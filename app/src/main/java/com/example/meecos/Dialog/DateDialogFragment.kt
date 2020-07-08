@@ -1,4 +1,4 @@
-package com.example.meecos.Fragment.Schedule
+package com.example.meecos.Dialog
 
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.R
-import kotlinx.android.synthetic.main.fragment_newplan.*
 import kotlinx.android.synthetic.main.fragment_newplan.view.*
 import java.text.SimpleDateFormat
 import java.util.*

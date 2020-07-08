@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
+import com.example.meecos.Dialog.EditOrDeleteFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
@@ -18,7 +19,8 @@ import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
 
-class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,EditOrDeleteFragment.EditOrDeleteListener{
+class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
+    EditOrDeleteFragment.EditOrDeleteListener{
     private lateinit var realm:Realm
     private lateinit var latestPlans:RealmResults<ScheduleObject>
     private var selectObject: ScheduleObject? = null

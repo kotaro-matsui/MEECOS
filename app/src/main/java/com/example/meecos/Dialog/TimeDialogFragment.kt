@@ -1,4 +1,4 @@
-package com.example.meecos.Fragment.Schedule
+package com.example.meecos.Dialog
 
 import android.app.Dialog
 import android.app.TimePickerDialog

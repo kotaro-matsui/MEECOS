@@ -1,9 +1,6 @@
 package com.example.meecos.Fragment.Schedule
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +8,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
 import com.example.meecos.Activity.MainActivity
+import com.example.meecos.Dialog.DateDialogFragment
+import com.example.meecos.Dialog.TimeDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 import io.realm.Realm
-import io.realm.kotlin.where
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_newplan.view.*
-import java.util.*
 
 class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
     //Realmの宣言
@@ -88,11 +82,13 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
 
     //日付選択ダイアログを表示するメソッドを呼び出すクラス
     private fun MainActivity.datePickDialog(textView: TextView,view:View) {
-        DateDialogFragment(textView,view).show(supportFragmentManager, textView::class.java.simpleName)
+        DateDialogFragment(textView, view)
+            .show(supportFragmentManager, textView::class.java.simpleName)
     }
     //時間選択ダイアログを表示するメソッドを呼び出すクラス
     private fun MainActivity.timePickDialog(textView: TextView) {
-        TimeDialogFragment(textView).show(supportFragmentManager, textView::class.java.simpleName)
+        TimeDialogFragment(textView)
+            .show(supportFragmentManager, textView::class.java.simpleName)
     }
 
     /*TODO:予定の登録、または変更した時にAlarmに登録する処理を実装する

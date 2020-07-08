@@ -7,14 +7,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -24,7 +22,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.meecos.Fragment.MeetingNotes.MeetingNotesFragment
 import com.example.meecos.Fragment.Profile.ProfileFragment
 import com.example.meecos.Fragment.Schedule.AlarmNotification
-import com.example.meecos.Fragment.Schedule.EditOrDeleteFragment
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import com.example.meecos.Fragment.home.HomeFragment
 import com.example.meecos.R

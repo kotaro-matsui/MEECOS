@@ -1,4 +1,4 @@
-package com.example.meecos.Fragment.Schedule
+package com.example.meecos.Dialog
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Config.CHOOSE
+import com.example.meecos.Fragment.Schedule.NewPlanFragment
 import com.example.meecos.Model.ScheduleObject
 import io.realm.Realm
 
@@ -37,7 +38,11 @@ class EditOrDeleteFragment: DialogFragment(){
         return AlertDialog.Builder(requireContext())
             .setItems(CHOOSE){dialog, which ->
                 when(CHOOSE[which]){
-                    "編集" -> (activity as MainActivity).replaceFragment(NewPlanFragment(scheduleObj))
+                    "編集" -> (activity as MainActivity).replaceFragment(
+                        NewPlanFragment(
+                            scheduleObj
+                        )
+                    )
                     "削除" ->{
                         AlertDialog.Builder(activity) // FragmentではActivityを取得して生成
                             .setTitle("確認")
