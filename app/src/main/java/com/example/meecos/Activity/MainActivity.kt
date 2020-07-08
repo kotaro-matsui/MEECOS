@@ -101,61 +101,6 @@ class MainActivity : AppCompatActivity(){
                 ACCESS_FINE_LOCATION,
                 ACCESS_NETWORK_STATE),
             PERMISSIONS_CODE)
-
-    ///////////////////////////////////////////通知テスト//////////////////////////////////////
-        val buttonStart: Button = findViewById(R.id.pushBtn)
-        //pushBtn(通知テスト）を押した時に処理開始
-        buttonStart.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = System.currentTimeMillis()
-            // 1sec
-            calendar.add(Calendar.SECOND, 1)
-            val intent = Intent(applicationContext, AlarmNotification::class.java)
-            intent.putExtra("RequestCode", requestCode)
-            pending = PendingIntent.getBroadcast(
-                applicationContext, requestCode, intent, 0
-            )
-
-            // アラームをセットする
-            am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (am != null) {
-                am!!.setExact(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis, pending
-                )
-
-                // トーストで設定されたことをを表示
-                Toast.makeText(
-                    applicationContext,
-                    "alarm start", Toast.LENGTH_SHORT
-                ).show()
-                Log.d("debug", "start")
-            }
-        }
-
-        // アラームの取り消し
-        val buttonCancel: Button = findViewById(R.id.cancelBtn)
-        buttonCancel.setOnClickListener{
-            val indent = Intent(applicationContext, AlarmNotification::class.java)
-            val pending = PendingIntent.getBroadcast(
-                applicationContext, requestCode, indent, 0
-            )
-
-            // アラームを解除する
-            val am =
-                this@MainActivity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (am != null) {
-                am.cancel(pending)
-                Toast.makeText(
-                    applicationContext,
-                    "alarm cancel", Toast.LENGTH_SHORT
-                ).show()
-                Log.d("debug", "cancel")
-            } else {
-                Log.d("debug", "null")
-            }
-        }
-        ///////////////////////////////////////////ここまで通知テスト//////////////////////////////////////
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return true

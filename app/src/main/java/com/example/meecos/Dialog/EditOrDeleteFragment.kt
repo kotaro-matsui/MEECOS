@@ -15,7 +15,6 @@ import io.realm.Realm
 class EditOrDeleteFragment: DialogFragment(){
     lateinit var realm :Realm
     lateinit var scheduleObj :ScheduleObject
-    // 呼び出し元のActivityを保持する
     private lateinit var listener: EditOrDeleteListener
 
     // コールバック用インタフェース。呼び出し元で実装する

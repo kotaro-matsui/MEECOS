@@ -74,12 +74,10 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         val dialog = EditOrDeleteFragment.newInstance(this.selectObject!!, this)
         dialog.show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
-
     //新規作成画面への遷移
     private val onCreatePlanBtn = View.OnClickListener {
         (activity as MainActivity).replaceFragment(NewPlanFragment(null))
     }
-
     override fun onDialogPositiveClick() {
         if(!ScheduleObject().deleteByID(this.selectObject!!.id!!)){
             showToast("削除に失敗しました")
