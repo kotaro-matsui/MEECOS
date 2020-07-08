@@ -219,7 +219,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         //calendar.timeInMillis = System.currentTimeMillis()
         calendar.set(date.year,date.monthValue,date.dayOfMonth,time.hour,time.minute)
         calendar.add(Calendar.HOUR, -1)
-        println()
         val intent = Intent(context, AlarmNotification::class.java)
         intent.putExtra("RequestCode", requestCode)
         pending = PendingIntent.getBroadcast(
