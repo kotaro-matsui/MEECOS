@@ -10,4 +10,9 @@ open class BaseFragment: Fragment() {
         val activity = activity as MainActivity
         activity.setTitle(title)
     }
+
+    fun replaceFragment (fragment: Fragment) {
+        val activity = activity as MainActivity
+        activity.replaceFragment(fragment)
+    }
 }

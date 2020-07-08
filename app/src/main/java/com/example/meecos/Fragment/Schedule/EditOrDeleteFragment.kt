@@ -30,22 +30,33 @@ class EditOrDeleteFragment(var scheduleObj :ScheduleObject?):DialogFragment(){
         val CHOOSE = arrayOf("編集", "削除")
     }
 
-    override fun onAttach(context: Context) {
+    //TODO:ここを変更してActivityではなくFragmentを呼び出し元と認識するようにする
+/*    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             // 呼び出し元のActivityを変数listenerで保持する
-            listener = context as EditOrDeleteListener
+            listener = activity as EditOrDeleteListener
         } catch (e: ClassCastException) {
             // 呼び出し元のActivityでコールバックインタフェースを実装していない場合
             throw ClassCastException((context.toString() +
                     " must implement NoticeDialogListener"))
         }
-    }
+    }*/
 
     //TODO:予定削除した時にAlarmからも削除する処理を実装する
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         //削除に失敗したかどうかの変数
         var isError = false
+
+        try {
+            // 呼び出し元のActivityを変数listenerで保持する
+            listener = ScheduleFragment() as EditOrDeleteListener
+        } catch (e: ClassCastException) {
+            // 呼び出し元のActivityでコールバックインタフェースを実装していない場合
+            throw ClassCastException((activity.toString() +
+                    " must implement EditOrDeleteListener"))
+        }
+
         val dialog = AlertDialog.Builder(requireContext())
             .setItems(CHOOSE){dialog, which ->
                 when(CHOOSE[which]){

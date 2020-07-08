@@ -35,7 +35,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() ,EditOrDeleteFragment.EditOrDeleteListener{
+class MainActivity : AppCompatActivity(){
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var toolbar: Toolbar
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() ,EditOrDeleteFragment.EditOrDeleteListe
         this.toolbar.title = subtitle
     }
 
-    //スケジュール画面で予定削除した時にEditOrDeleteFragmentから渡される処理
+    /*//スケジュール画面で予定削除した時にEditOrDeleteFragmentから渡される処理
     override fun onDialogPositiveClick(dialog: DialogFragment,isError:Boolean) {
         if(isError){
             Toast.makeText(this, "削除に失敗しました。", Toast.LENGTH_SHORT).show()
@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() ,EditOrDeleteFragment.EditOrDeleteListe
     }
     override fun onDialogNegativeClick(dialog: DialogFragment) {
         TODO("Not yet implemented")
-    }
+    }*/
 
 
 }
