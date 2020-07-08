@@ -1,18 +1,12 @@
 package com.example.meecos.Fragment.Schedule
 
-import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
@@ -27,6 +21,7 @@ import io.realm.RealmResults
 class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,EditOrDeleteFragment.EditOrDeleteListener{
     private lateinit var realm:Realm
     private lateinit var latestPlans:RealmResults<ScheduleObject>
+    private var selectObject: ScheduleObject? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,9 +67,10 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,Ed
     //各レコードを押した時の処理
     override fun onItemClick(view: View, position: Int) {
         //押したレコードの内容（ScheduleObject）を取得
-        val scheduleObj = latestPlans[position]
+        this.selectObject = latestPlans[position] as ScheduleObject
         //ダイアログを開き、編集と削除が選べるようにする
-        EditOrDeleteFragment(scheduleObj!!).show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
+        val dialog = EditOrDeleteFragment.newInstance(this.selectObject!!, this)
+        dialog.show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
 
     //新規作成画面への遷移
@@ -82,20 +78,21 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,Ed
         (activity as MainActivity).replaceFragment(NewPlanFragment(null))
     }
 
-    override fun onDialogPositiveClick(dialog: DialogFragment, isError: Boolean) {
-        if(isError){
-            Toast.makeText(activity, "削除に失敗しました。", Toast.LENGTH_SHORT).show()
-        }else{
-            /*var a = this@ScheduleFragment.activity
-            (a as MainActivity).replaceFragment(ScheduleFragment())
-            Toast.makeText(a as MainActivity, "削除に成功しました。", Toast.LENGTH_SHORT).show()*/
-            Handler(Looper.getMainLooper()).post {
-                replaceFragment(ScheduleFragment())
-            }
+    override fun onDialogPositiveClick() {
+        if(!ScheduleObject().deleteByID(this.selectObject!!.id!!)){
+            showToast("削除に失敗しました")
+            return
+        } else {
+            replaceFragment(ScheduleFragment())
+            showToast("削除に成功しました")
         }
     }
 
-    override fun onDialogNegativeClick(dialog: DialogFragment) {
+    override fun onDialogNegativeClick() {
         TODO("Not yet implemented")
+    }
+
+    fun showToast(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }

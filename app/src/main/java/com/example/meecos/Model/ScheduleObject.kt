@@ -1,11 +1,11 @@
 package com.example.meecos.Model
 
+import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
-import java.util.*
 
-open class ScheduleObject :RealmObject(){
+open class ScheduleObject: RealmObject() {
     @PrimaryKey
     var id : Int? = null
     @Required
@@ -18,4 +18,12 @@ open class ScheduleObject :RealmObject(){
     var endTime: String? = null
     @Required
     var contents: String? = null
+
+    fun deleteByID (id: Int): Boolean {
+        val realm = Realm.getDefaultInstance()
+        val target = realm.where(ScheduleObject::class.java)
+            .equalTo("id", id)
+            .findAll()
+        return BaseModel().delete(target)
+    }
 }
