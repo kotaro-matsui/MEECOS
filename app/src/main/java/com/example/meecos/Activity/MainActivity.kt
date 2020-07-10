@@ -58,8 +58,9 @@ class MainActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
 
         // Realmの実装
+        Realm.init(this)
         val config = RealmConfiguration.Builder()
-            // .deleteRealmIfMigrationNeeded()
+            .deleteRealmIfMigrationNeeded()
             .build()
         Realm.setDefaultConfiguration(config)
         // Realmの実装終わり
