@@ -13,6 +13,7 @@
         android:paddingBottom="10dp"
         android:background="@drawable/bottom_border_white"
         android:paddingStart="10dp"
+        android:textStyle="bold"
         android:textSize="20sp"
         android:textColor="@color/white"
         tools:ignore="MissingConstraints,RtlSymmetry" />
