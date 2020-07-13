@@ -16,6 +16,7 @@ class EditOrDeleteFragment: DialogFragment(){
     lateinit var realm :Realm
     lateinit var scheduleObj :ScheduleObject
     private lateinit var listener: EditOrDeleteListener
+    var isPlanList : Boolean = false
 
     // コールバック用インタフェース。呼び出し元で実装する
     interface EditOrDeleteListener {
@@ -24,10 +25,11 @@ class EditOrDeleteFragment: DialogFragment(){
     }
 
     companion object {
-        fun newInstance(scheduleObj :ScheduleObject, listener: EditOrDeleteListener): EditOrDeleteFragment {
+        fun newInstance(scheduleObj :ScheduleObject, listener: EditOrDeleteListener,isPlanList:Boolean): EditOrDeleteFragment {
             val dialog = EditOrDeleteFragment()
             dialog.scheduleObj = scheduleObj
             dialog.listener = listener
+            dialog.isPlanList = isPlanList
             return dialog
         }
     }

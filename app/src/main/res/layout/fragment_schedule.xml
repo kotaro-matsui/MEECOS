@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="直近の予定一覧"
+            android:text="予定一覧"
             android:textColor="@color/white"
             android:textAlignment="center"/>
 
