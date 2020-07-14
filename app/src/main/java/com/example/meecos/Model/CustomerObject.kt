@@ -8,8 +8,6 @@ import io.realm.annotations.Required
 
 open class CustomerObject: RealmObject() {
 
-
-
     @PrimaryKey
     var id : Int? = null
 
@@ -28,10 +26,15 @@ open class CustomerObject: RealmObject() {
 
 
     // 全てのcustomerObjectをフリガナの昇順にソートし、その結果を返す
-    fun fetchAllCustomerObject() : RealmResults<CustomerObject>{
-        //initしたインスタンスをとってくる
+    fun fetchAllCustomerObject() : RealmResults<CustomerObject> {
         val realm: Realm = Realm.getDefaultInstance()
         return realm.where(CustomerObject::class.java).sort("howToRead").findAll()
+    }
+
+    // idと一致するcustomerObjectを一件返す
+    fun findCustomerById(id : Int) : CustomerObject? {
+        val realm: Realm = Realm.getDefaultInstance()
+        return realm.where(CustomerObject::class.java).equalTo("id", id).findFirst()
     }
 
 }

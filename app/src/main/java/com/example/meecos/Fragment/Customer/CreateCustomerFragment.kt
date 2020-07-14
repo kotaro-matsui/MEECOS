@@ -4,13 +4,12 @@ import android.app.AlertDialog
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
@@ -30,6 +29,11 @@ class CreateCustomerFragment : BaseFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_create_customer, container, false)
 
+        val backListButton = view.findViewById<ImageButton>(R.id.back_list)
+        backListButton.setOnClickListener{
+            replaceFragment(CustomerFragment())
+        }
+
         val customerName = view.findViewById<EditText>(R.id.customer_name)
 
         val customerHowToRead = view.findViewById<EditText>(R.id.customer_how_to_read)
@@ -44,13 +48,15 @@ class CreateCustomerFragment : BaseFragment() {
             // 現状、エラーが発生したりしなかったりして、原因が解明できていない
             // grpc failed at android.location.Geocoder.getFromLocationName
 
-//            if (customerAddressNumber.text.toString().length == 7) {
+            if (customerAddressNumber.text.toString().length == 7) {
                 // 『0000000』の形式の郵便番号を『000-0000』に変換
-//                val sb = StringBuilder()
-////                sb.append(customerAddressNumber.text.toString())
-////                sb.insert(3, "-")
+                val sb = StringBuilder()
+                sb.append(customerAddressNumber.text.toString())
+                sb.insert(3, "-")
 
-                val address = searchAddressFromZipCode("sb.toString()")
+                Log.d("TAG", "郵便番号の中身は$sb")
+
+                val address = searchAddressFromZipCode(sb.toString())
                 if (address != null) {
                     val customerAddress =
                         address.adminArea + address.locality + address.featureName
@@ -64,14 +70,14 @@ class CreateCustomerFragment : BaseFragment() {
                         .show()
                 }
 
-//            } else {
-//                AlertDialog.Builder(this.activity)
-//                    .setTitle("入力エラー")
-//                    .setMessage("7桁の郵便番号を入力して下さい")
-//                    .setPositiveButton("OK") { _, _ ->
-//                    }
-//                    .show()
-//            }
+            } else {
+                AlertDialog.Builder(this.activity)
+                    .setTitle("入力エラー")
+                    .setMessage("7桁の郵便番号を入力して下さい")
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .show()
+            }
 
         }
 
@@ -113,7 +119,7 @@ class CreateCustomerFragment : BaseFragment() {
                 .show()
         }
         // フリガナの全角カタカナバリデーションチェック
-        else if(!customerHowToRead.matches("^[\\u30A0-\\u30FF]+$".toRegex())) {
+        else if (!customerHowToRead.matches("^[\\u30A0-\\u30FF]+$".toRegex())) {
             AlertDialog.Builder(this.activity)
                 .setTitle("入力エラー")
                 .setMessage("フリガナは全角カタカナで入力して下さい")
@@ -138,8 +144,11 @@ class CreateCustomerFragment : BaseFragment() {
                     obj.bottomAddress = customerBottomAddress
                     obj.phoneNumber = customerPhoneNumber
 
-                    Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT)
-                        .show()
+                    val toast =
+                        Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT)
+
+                    toast.setGravity(Gravity.CENTER, 0, -200)
+                    toast.show()
 
                 }
 
@@ -176,7 +185,7 @@ class CreateCustomerFragment : BaseFragment() {
 
         try {
 
-            val address = geocoder.getFromLocationName("530-0003", 1)
+            val address = geocoder.getFromLocationName(zipCode, 1)
             if (address != null && address.size != 0) {
                 // latitudeが緯度、longitudeが軽度
                 val latitude = address[0].latitude
@@ -197,8 +206,9 @@ class CreateCustomerFragment : BaseFragment() {
             }
 
         } catch (e: IOException) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace()
+            Log.d("TAG", "やばいやつ")
 
         }
 
