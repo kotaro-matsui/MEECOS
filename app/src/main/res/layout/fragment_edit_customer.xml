@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,35 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:textSize="10sp"
-            android:textAlignment="center"
-            android:textColor="@color/white"/>
-
-        <TextView
-            android:id="@+id/customer_how_to_read"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_margin="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -45,16 +18,46 @@
             android:layout_weight="0.3"
             android:textAlignment="center"
             android:text="客先名"
-            android:textStyle="bold"
+            android:textSize="10sp"
             android:textColor="@color/white"/>
 
-        <TextView
+        <EditText
             android:id="@+id/customer_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/bottom_border_white"
+            android:inputType="text"
+            android:textColorHint="@color/white"
+            android:layout_weight="0.7"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:textAlignment="center"
+            android:text="フリガナ"
+            android:textSize="10sp"
             android:textColor="@color/white"/>
+
+        <EditText
+            android:id="@+id/customer_how_to_read"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:background="@drawable/bottom_border_white"
+            android:hint="カタカナで入力"
+            android:inputType="text"
+            android:textColorHint="@color/clear_gray"
+            android:layout_weight="0.7"/>
 
     </LinearLayout>
 
@@ -70,15 +73,29 @@
             android:layout_weight="0.3"
             android:textAlignment="center"
             android:text="郵便番号"
-            android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textSize="10sp"
+            android:textColor="@color/white"/>
 
-        <TextView
+        <EditText
             android:id="@+id/customer_address_number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/bottom_border_white"
+            android:hint="0000000"
+            android:inputType="number"
+            android:maxLength="7"
+            android:textColorHint="@color/clear_gray"
+            android:layout_weight="0.5" />
+
+        <Button
+            android:id="@+id/search_address"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_weight="0.2"
+            android:background="@color/black"
+            android:layout_gravity="center"
+            android:text="検索"
             android:textColor="@color/white"/>
 
     </LinearLayout>
@@ -94,17 +111,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:textAlignment="center"
-            android:text="住所"
-            android:textStyle="bold"
+            android:text="都道府県・市区町村"
+            android:textSize="10sp"
             android:textColor="@color/white"/>
 
-        <TextView
-            android:id="@+id/customer_address"
+        <EditText
+            android:id="@+id/customer_top_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/white"
+            android:background="@drawable/bottom_border_white"
+            android:inputType="text"/>
 
     </LinearLayout>
 
@@ -118,51 +136,56 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            android:textAlignment="center"
+            android:text="番地・建物名"
+            android:textSize="10sp"
+            android:textColor="@color/white"/>
+
+        <EditText
+            android:id="@+id/customer_bottom_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:textColor="@color/white"
+            android:background="@drawable/bottom_border_white"
+            android:inputType="text"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:textAlignment="center"
             android:text="電話番号"
-            android:textStyle="bold"
-            android:textAlignment="center"
+            android:textSize="10sp"
             android:textColor="@color/white"/>
 
-        <TextView
+        <EditText
             android:id="@+id/customer_phone_number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/white"
+            android:background="@drawable/bottom_border_white"
+            android:inputType="number"
+            android:textColorHint="@color/clear_gray"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/customer_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="@color/black"
-            android:text="編集"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
-
-        <Button
-            android:id="@+id/customer_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="@color/black"
-            android:text="削除"
-            android:textStyle="bold"
-            android:textColor="@color/colorAccent"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/customer_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:background="@color/black"
+        android:text="編集完了"
+        android:textColor="@color/white"/>
 
 </LinearLayout>

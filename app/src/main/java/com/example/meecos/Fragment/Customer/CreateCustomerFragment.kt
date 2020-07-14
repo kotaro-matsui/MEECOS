@@ -12,17 +12,15 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.meecos.Activity.MainActivity
-import com.example.meecos.Dialog.ProgressDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
+import java.io.IOException
 import java.util.*
-import kotlin.concurrent.thread
 
 class CreateCustomerFragment : BaseFragment() {
 
-//    private val progressDialog = ProgressDialogFragment.newInstance()
     lateinit var realm: Realm
 
     override fun onCreateView(
@@ -43,38 +41,39 @@ class CreateCustomerFragment : BaseFragment() {
         val searchButton = view.findViewById<Button>(R.id.search_address)
         searchButton.setOnClickListener {
 
-//            progressDialog.show(requireActivity().supportFragmentManager,"TAG")
-//
-//            thread {
+            // 現状、エラーが発生したりしなかったりして、原因が解明できていない
+            // grpc failed at android.location.Geocoder.getFromLocationName
 
-                if (customerAddressNumber.text.toString().length == 7) {
-                    val sb = StringBuilder()
-                    sb.append(customerAddressNumber.text.toString())
-                    sb.insert(3, "-")
-                    val address = searchAddressFromZipCode(sb.toString())
-                    if (address != null) {
-                        val customerAddress =
-                            address.adminArea + address.locality + address.featureName
-                        customerTopAddress.setText(customerAddress, TextView.BufferType.NORMAL)
-                    } else {
-                        AlertDialog.Builder(this.activity)
-                            .setTitle("検索エラー")
-                            .setMessage("住所が取得できませんでした")
-                            .setPositiveButton("OK") { _, _ ->
-                            }
-                            .show()
-                    }
+//            if (customerAddressNumber.text.toString().length == 7) {
+                // 『0000000』の形式の郵便番号を『000-0000』に変換
+//                val sb = StringBuilder()
+////                sb.append(customerAddressNumber.text.toString())
+////                sb.insert(3, "-")
 
+                val address = searchAddressFromZipCode("sb.toString()")
+                if (address != null) {
+                    val customerAddress =
+                        address.adminArea + address.locality + address.featureName
+                    customerTopAddress.setText(customerAddress, TextView.BufferType.NORMAL)
                 } else {
                     AlertDialog.Builder(this.activity)
-                        .setTitle("入力エラー")
-                        .setMessage("7桁の郵便番号を入力して下さい")
+                        .setTitle("検索エラー")
+                        .setMessage("住所が取得できませんでした")
                         .setPositiveButton("OK") { _, _ ->
                         }
                         .show()
                 }
-            }
-//        }
+
+//            } else {
+//                AlertDialog.Builder(this.activity)
+//                    .setTitle("入力エラー")
+//                    .setMessage("7桁の郵便番号を入力して下さい")
+//                    .setPositiveButton("OK") { _, _ ->
+//                    }
+//                    .show()
+//            }
+
+        }
 
         val customerBottomAddress = view.findViewById<EditText>(R.id.customer_bottom_address)
 
@@ -104,31 +103,51 @@ class CreateCustomerFragment : BaseFragment() {
         , customerBottomAddress: String
         , customerPhoneNumber: String
     ) {
+        // 客先名入力バリデーションチェック
+        if (customerName == "") {
+            AlertDialog.Builder(this.activity)
+                .setTitle("入力エラー")
+                .setMessage("客先名を入力して下さい")
+                .setPositiveButton("OK") { _, _ ->
+                }
+                .show()
+        }
+        // フリガナの全角カタカナバリデーションチェック
+        else if(!customerHowToRead.matches("^[\\u30A0-\\u30FF]+$".toRegex())) {
+            AlertDialog.Builder(this.activity)
+                .setTitle("入力エラー")
+                .setMessage("フリガナは全角カタカナで入力して下さい")
+                .setPositiveButton("OK") { _, _ ->
+                }
+                .show()
+        } else {
 
-        //initしたインスタンスをとってくる
-        realm = Realm.getDefaultInstance()
+            //initしたインスタンスをとってくる
+            realm = Realm.getDefaultInstance()
 
-        // トランザクションして登録
-        try {
+            // トランザクションして登録
+            try {
 
-            realm.executeTransaction { realm ->
+                realm.executeTransaction { realm ->
 
-                val obj = realm.createObject(CustomerObject::class.java, getNextUserId())
-                obj.name = customerName
-                obj.howToRead = customerHowToRead
-                obj.addressNumber = customerAddressNumber
-                obj.topAddress = customerTopAddress
-                obj.bottomAddress = customerBottomAddress
-                obj.phoneNumber = customerPhoneNumber
+                    val obj = realm.createObject(CustomerObject::class.java, getNextUserId())
+                    obj.name = customerName
+                    obj.howToRead = customerHowToRead
+                    obj.addressNumber = customerAddressNumber
+                    obj.topAddress = customerTopAddress
+                    obj.bottomAddress = customerBottomAddress
+                    obj.phoneNumber = customerPhoneNumber
 
-                Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT)
+                        .show()
 
+                }
+
+            } catch (e: Exception) {
+                println("exceptionエラー:" + e.message)
+            } catch (r: RuntimeException) {
+                println("runtime exceptionエラー:" + r.message)
             }
-
-        } catch (e: Exception) {
-            println("exceptionエラー:" + e.message)
-        } catch (r: RuntimeException) {
-            println("runtime exceptionエラー:" + r.message)
         }
     }
 
@@ -154,22 +173,33 @@ class CreateCustomerFragment : BaseFragment() {
         }
 
         val geocoder = Geocoder(this.activity, Locale.JAPAN)
-        val address = geocoder.getFromLocationName(zipCode, 1)
-        if (address != null && address.size != 0) {
-            val latitude = address[0].latitude
-            val longitude = address[0].longitude
-            val addressList = geocoder.getFromLocation(latitude, longitude, 100)
 
-            val filteredList =
-                addressList.filter { x -> x.latitude == latitude && x.longitude == longitude }
-            val sortedList = filteredList.sortedBy { x -> x.getAddressLine(0).length }
-            sortedList.forEach { temp ->
-                if (temp.featureName != zipCode) {
-                    return temp
+        try {
+
+            val address = geocoder.getFromLocationName("530-0003", 1)
+            if (address != null && address.size != 0) {
+                // latitudeが緯度、longitudeが軽度
+                val latitude = address[0].latitude
+                val longitude = address[0].longitude
+                val addressList = geocoder.getFromLocation(latitude, longitude, 100)
+
+                val filteredList =
+                    addressList.filter { x -> x.latitude == latitude && x.longitude == longitude }
+                val sortedList = filteredList.sortedBy { x -> x.getAddressLine(0).length }
+                sortedList.forEach { temp ->
+                    if (temp.featureName != zipCode) {
+                        return temp
+                    }
                 }
+
+                return if (addressList.isEmpty()) address[0] else addressList[0]
+
             }
 
-            return if (addressList.isEmpty()) address[0] else addressList[0]
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+
         }
 
         return null
