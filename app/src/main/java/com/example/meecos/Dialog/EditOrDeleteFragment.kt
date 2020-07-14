@@ -33,8 +33,6 @@ class EditOrDeleteFragment: DialogFragment(){
             return dialog
         }
     }
-
-    // TODO: 予定削除した時にAlarmからも削除する処理を実装する
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(requireContext())
             .setItems(CHOOSE){dialog, which ->

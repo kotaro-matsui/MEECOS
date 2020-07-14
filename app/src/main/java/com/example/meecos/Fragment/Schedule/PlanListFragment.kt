@@ -52,7 +52,6 @@ class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
         //予定表示する処理
         //Realmからレコード取得
         realm = Realm.getDefaultInstance()
-        //TODO:開始日時と終了日時の間で検索する必要があるが、その為にはStartDateとEndDateをDate型にする必要がある
         this.latestPlans = realm.where(ScheduleObject::class.java)
             .greaterThanOrEqualTo("endDate",date)
             .lessThanOrEqualTo("startDate",date)

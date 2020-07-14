@@ -94,14 +94,11 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         }
         return view
     }
-
     override fun onDestroy() {
         super.onDestroy()
         // Realmオブジェクトの削除
         realm.close()
     }
-
-
     //日付選択ダイアログを表示するメソッドを呼び出すクラス
     private fun MainActivity.datePickDialog(textView: TextView,view:View) {
         DateDialogFragment(textView, view)
@@ -113,8 +110,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
             .show(supportFragmentManager, textView::class.java.simpleName)
     }
 
-    /*TODO:予定の登録、または変更した時にAlarmに登録する処理を実装する
-    * 削除する時の対象を判断する為に、Alarm登録時に格納する変数もScheduleObjectに必要？*/
+    /* 削除する時の対象を判断する為に、Alarm登録時に格納する変数もScheduleObjectに必要？*/
     private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
         var newId = -1
         //編集でない場合は最新のIDを取得し、+1する
@@ -132,7 +128,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
             val dEndDate = sdFormat.parse(endDate)
             realm.executeTransaction{ realm ->
                 if(scheduleObj == null){
-                    val target = realm.createObject(ScheduleObject::class.java!!, newId)
+                    val target = realm.createObject(ScheduleObject::class.java, newId)
                     target.startDate = dStartDate
                     target.startTime = startTime
                     target.endDate = dEndDate
@@ -149,7 +145,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                     target?.contents = contents
                 }
             }
-            registNotification(startDate,startTime,newId)
+            registNotification(startDate,startTime,newId,contents)
             if(scheduleObj == null){
                 Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT).show()
             }else{
@@ -166,16 +162,14 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         }
     }
 
-    private fun registNotification(strDate:String,strTime:String,notifiId:Int?){
+    private fun registNotification(strDate:String,strTime:String,notifiId:Int?,contents: String){
         //予定日時をLocalDateとTime型に変換し、LocalDateTime型にしてCalenderに登録
         val date = LocalDate.parse(strDate, DateTimeFormatter.ISO_DATE)
         val time = LocalTime.parse(strTime, DateTimeFormatter.ISO_LOCAL_TIME)
         val calendar = Calendar.getInstance()
-        //予定日時の1時間前に通知がいくように1時間マイナスする
-        calendar.set(date.year,date.monthValue - 1,date.dayOfMonth,time.hour - 1,time.minute,0)
-        println("" + calendar.get(Calendar.YEAR)  + "年" + calendar.get(Calendar.MONTH) +"月"+
-                calendar.get(Calendar.DATE) + "日" + calendar.get(Calendar.HOUR_OF_DAY) + "時" + calendar.get(Calendar.MINUTE)+"分")
         println(calendar.timeInMillis)
+        //予定日時の1時間前に通知がいくように1時間マイナスする
+        calendar.set(date.year,date.monthValue - 1,date.dayOfMonth,time.hour -1 ,time.minute,0)
         val intent = Intent(context, AlarmNotification::class.java)
         intent.putExtra("RequestCode", requestCode)
         pending = PendingIntent.getBroadcast(

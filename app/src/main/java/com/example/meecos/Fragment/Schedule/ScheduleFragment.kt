@@ -51,7 +51,6 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
             val trueMonth = month + 1
             val strMonth = if(trueMonth < 10) "0$trueMonth" else trueMonth.toString()
             val date = "$year-$strMonth-$dayOfMonth"
-            //TODO:DBを日付で検索し、該当したデータをPlanListFragmentに渡す
             val plf:PlanListFragment = PlanListFragment.newInstance(date)
             (activity as MainActivity).replaceFragment(plf)
         }

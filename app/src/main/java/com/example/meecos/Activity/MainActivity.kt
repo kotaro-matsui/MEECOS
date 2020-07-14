@@ -3,14 +3,10 @@ package com.example.meecos.Activity
 import android.Manifest.permission.*
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -26,7 +22,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.meecos.Config.PERMISSIONS_CODE
 import com.example.meecos.Fragment.Meeting.MeetingNotesFragment
 import com.example.meecos.Fragment.Profile.ProfileFragment
-import com.example.meecos.Fragment.Schedule.AlarmNotification
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import com.example.meecos.Fragment.home.HomeFragment
 import com.example.meecos.R
@@ -35,7 +30,6 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import com.example.meecos.Fragment.Customer.CustomerFragment
-import java.util.*
 
 class MainActivity : AppCompatActivity(){
 
@@ -128,20 +122,5 @@ class MainActivity : AppCompatActivity(){
     fun setSubTitle (subtitle: String) {
         this.toolbar.title = subtitle
     }
-
-    /*//スケジュール画面で予定削除した時にEditOrDeleteFragmentから渡される処理
-    override fun onDialogPositiveClick(dialog: DialogFragment,isError:Boolean) {
-        if(isError){
-            Toast.makeText(this, "削除に失敗しました。", Toast.LENGTH_SHORT).show()
-        }else{
-            replaceFragment(ScheduleFragment())
-            Toast.makeText(this, "削除に成功しました。", Toast.LENGTH_SHORT).show()
-        }
-    }
-    override fun onDialogNegativeClick(dialog: DialogFragment) {
-        TODO("Not yet implemented")
-    }*/
-
-
 }
 

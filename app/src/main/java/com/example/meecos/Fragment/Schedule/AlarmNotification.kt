@@ -28,6 +28,7 @@ class AlarmNotification : BroadcastReceiver() {
             "onReceive() pid=" + Process.myPid()
         )
         val requestCode = intent.getIntExtra("RequestCode", 0)
+        //val contents = intent.getStringExtra("contents")
         val pendingIntent = PendingIntent.getActivity(
             context,
             requestCode,
@@ -43,7 +44,8 @@ class AlarmNotification : BroadcastReceiver() {
         val cTime = dataFormat.format(currentTime)
 
         // メッセージ　+ 11:22:331
-        val message = "時間になりました。 $cTime"
+        val message = "予定時刻１時間前です。$cTime"
+        //TODO:予定の内容を通知のメッセージに入れたい
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val defaultSoundUri =
