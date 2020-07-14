@@ -23,6 +23,7 @@ import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 import io.realm.Realm
+import kotlinx.android.synthetic.main.fragment_schedule.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -88,61 +89,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                 endTimeBtn.text.toString(),
                 contents.text.toString())
         }
-
-        ///////////////////////////////////////////通知テスト//////////////////////////////////////
-        val buttonStart: Button = view.findViewById(R.id.notification_button)
-        //pushBtn(通知テスト）を押した時に処理開始
-        buttonStart.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = System.currentTimeMillis()
-            // 1sec
-            calendar.add(Calendar.SECOND, 1)
-            val intent = Intent(context, AlarmNotification::class.java)
-            intent.putExtra("RequestCode", requestCode)
-            pending = PendingIntent.getBroadcast(
-                context, requestCode, intent, 0
-            )
-
-            // アラームをセットする
-            am = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (am != null) {
-                am!!.setExact(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis, pending
-                )
-
-                // トーストで設定されたことを表示
-                Toast.makeText(
-                    activity,
-                    "alarm start", Toast.LENGTH_SHORT
-                ).show()
-                Log.d("debug", "start")
-            }
-        }
-
-        // アラームの取り消し
-        val buttonCancel: Button = view.findViewById(R.id.notification_cancel_button)
-        buttonCancel.setOnClickListener{
-            val indent = Intent(activity, AlarmNotification::class.java)
-            val pending = PendingIntent.getBroadcast(
-                activity, requestCode, indent, 0
-            )
-
-            // アラームを解除する
-            val am =
-                activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (am != null) {
-                am.cancel(pending)
-                Toast.makeText(
-                    activity,
-                    "alarm cancel", Toast.LENGTH_SHORT
-                ).show()
-                Log.d("debug", "cancel")
-            } else {
-                Log.d("debug", "null")
-            }
-        }
-        ///////////////////////////////////////////ここまで通知テスト//////////////////////////////////////
         return view
     }
 
@@ -186,7 +132,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                     target.endDate = endDate
                     target.endTime = endTime
                     target.contents = contents
-                    Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT).show()
                 }else{
                     val target = realm.where(ScheduleObject::class.java)
                         .equalTo("id", scheduleObj!!.id)
@@ -196,10 +141,14 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                     target?.endDate = endDate
                     target?.endTime = endTime
                     target?.contents = contents
-                    Toast.makeText(activity as MainActivity, "変更に成功しました。id:$newId", Toast.LENGTH_SHORT).show()
                 }
             }
-            registNotification(startDate,startTime,scheduleObj?.id)
+            registNotification(startDate,startTime,newId)
+            if(scheduleObj == null){
+                Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(activity as MainActivity, "変更に成功しました。id:$newId", Toast.LENGTH_SHORT).show()
+            }
         }catch (e : Exception){
             if(scheduleObj == null){
                 Toast.makeText(activity as MainActivity, "登録に失敗しました。id:$newId", Toast.LENGTH_SHORT).show()
@@ -207,6 +156,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                 Toast.makeText(activity as MainActivity, "変更に失敗しました。id:$newId", Toast.LENGTH_SHORT).show()
             }
             Toast.makeText(activity as MainActivity, e.message, Toast.LENGTH_SHORT).show()
+            println(e.message)
         }
     }
 
@@ -214,15 +164,16 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         //予定日時をLocalDateとTime型に変換し、LocalDateTime型にしてCalenderに登録
         val date = LocalDate.parse(strDate, DateTimeFormatter.ISO_DATE)
         val time = LocalTime.parse(strTime, DateTimeFormatter.ISO_LOCAL_TIME)
-        println("date : $date  time: $time")
         val calendar = Calendar.getInstance()
-        //calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(date.year,date.monthValue,date.dayOfMonth,time.hour,time.minute)
-        calendar.add(Calendar.HOUR, -1)
+        //予定日時の1時間前に通知がいくように1時間マイナスする
+        calendar.set(date.year,date.monthValue - 1,date.dayOfMonth,time.hour - 1,time.minute,0)
+        println("" + calendar.get(Calendar.YEAR)  + "年" + calendar.get(Calendar.MONTH) +"月"+
+                calendar.get(Calendar.DATE) + "日" + calendar.get(Calendar.HOUR_OF_DAY) + "時" + calendar.get(Calendar.MINUTE)+"分")
+        println(calendar.timeInMillis)
         val intent = Intent(context, AlarmNotification::class.java)
         intent.putExtra("RequestCode", requestCode)
         pending = PendingIntent.getBroadcast(
-            context, requestCode, intent, 0
+            context, requestCode, intent, notifiId!!
         )
 
         // アラームをセットする
@@ -238,27 +189,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                 "alarm start", Toast.LENGTH_SHORT
             ).show()
             Log.d("debug", "start")
-        }
-    }
-
-    private fun cancelNotification(notifiId:Int) {
-        val indent = Intent(activity, AlarmNotification::class.java)
-        val pending = PendingIntent.getBroadcast(
-            activity, requestCode, indent, 0
-        )
-
-        // アラームを解除する
-        val am =
-            activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        if (am != null) {
-            am.cancel(pending)
-            Toast.makeText(
-                activity,
-                "alarm cancel", Toast.LENGTH_SHORT
-            ).show()
-            Log.d("debug", "cancel")
-        } else {
-            Log.d("debug", "null")
         }
     }
 }

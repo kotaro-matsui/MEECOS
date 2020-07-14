@@ -1,5 +1,7 @@
 package com.example.meecos.Model
 
+import android.content.Context
+import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -19,11 +21,12 @@ open class ScheduleObject: RealmObject() {
     @Required
     var contents: String? = null
 
-    fun deleteByID (id: Int): Boolean {
+    fun deleteByID (id: Int, context: Context?): Boolean {
         val realm = Realm.getDefaultInstance()
         val target = realm.where(ScheduleObject::class.java)
             .equalTo("id", id)
             .findAll()
+        (ScheduleFragment()).cancelNotification(id,context)
         return BaseModel().delete(target)
     }
 }

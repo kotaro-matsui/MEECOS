@@ -6,55 +6,85 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
+import com.example.meecos.Dialog.EditOrDeleteFragment
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
+import com.example.meecos.RecyclerView.RecyclerAdapter
+import com.example.meecos.RecyclerView.RecyclerViewHolder
+import io.realm.Realm
+import io.realm.RealmResults
 
-class PlanListFragment : BaseFragment() {
+class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
+    EditOrDeleteFragment.EditOrDeleteListener{
+    private lateinit var realm:Realm
+    private lateinit var latestPlans: RealmResults<ScheduleObject>
+    private var selectObject: ScheduleObject? = null
+    private var date:String? = null
+
+    companion object {
+        fun newInstance(date:String): PlanListFragment{
+            val page = PlanListFragment()
+            page.date = date
+            return page
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         var view = inflater.inflate(R.layout.fragment_planlist,container,false)
-        setTitle("2020年○月○日 予定一覧")
+        setTitle(date +"予定一覧")
 
-        //予定編集画面への遷移
-        val editPlanBtn1 = view.findViewById<Button>(R.id.editPlan1)
-        editPlanBtn1.setOnClickListener(onEditBtnClick)
+        //予定表示する処理
+        //Realmからレコード取得
+        realm = Realm.getDefaultInstance()
+        this.latestPlans = realm.where(ScheduleObject::class.java)
+            .equalTo("startDate", date)
+            .sort("startDate")
+            .findAll()
 
-        val editPlanBtn2 = view.findViewById<Button>(R.id.editPlan2)
-        editPlanBtn2.setOnClickListener(onEditBtnClick)
-
-        val editPlanBtn3 = view.findViewById<Button>(R.id.editPlan3)
-        editPlanBtn3.setOnClickListener(onEditBtnClick)
-
-        //予定削除確認ダイアログの表示
-        val deletePlanBtn1 = view.findViewById<Button>(R.id.deletePlan1)
-        deletePlanBtn1.setOnClickListener(onDeleteBtnClick)
-
-        val deletePlanBtn2 = view.findViewById<Button>(R.id.deletePlan2)
-        deletePlanBtn2.setOnClickListener(onDeleteBtnClick)
-
-        val deletePlanBtn3 = view.findViewById<Button>(R.id.deletePlan3)
-        deletePlanBtn3.setOnClickListener(onDeleteBtnClick)
+        var recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.adapter = RecyclerAdapter(
+            (activity as MainActivity),
+            this,
+            latestPlans)
+        recyclerView.layoutManager = LinearLayoutManager(
+            (activity as MainActivity),
+            LinearLayoutManager.VERTICAL, false)
         return view
     }
 
-    private val onEditBtnClick = View.OnClickListener {
-        (activity as MainActivity).replaceFragment(NewPlanFragment(null))
+    override fun onItemClick(view: View, position: Int) {
+        //押したレコードの内容（ScheduleObject）を取得
+        this.selectObject = latestPlans[position] as ScheduleObject
+        //ダイアログを開き、編集と削除が選べるようにする
+        val dialog = EditOrDeleteFragment.newInstance(this.selectObject!!, this, true)
+        dialog.show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
 
-    private val onDeleteBtnClick = View.OnClickListener {
-        AlertDialog.Builder(activity) // FragmentではActivityを取得して生成
-            .setTitle("確認")
-            .setMessage("削除してもよろしいですか？")
-            .setPositiveButton("はい") { _, _ ->
-                // TODO:Yesが押された時の挙動
-            }
-            .setNegativeButton("いいえ") { _, _ ->
-                // TODO:Noが押された時の挙動
-            }
-            .show()
+    override fun onDialogPositiveClick() {
+        if(!ScheduleObject().deleteByID(this.selectObject!!.id!!,context)){
+            showToast("削除に失敗しました")
+            return
+        } else {
+            val rpf = newInstance(this.date!!)
+            replaceFragment(rpf)
+            showToast("削除に成功しました")
+        }
+    }
+
+    override fun onDialogNegativeClick() {
+
+    }
+
+    fun showToast(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }

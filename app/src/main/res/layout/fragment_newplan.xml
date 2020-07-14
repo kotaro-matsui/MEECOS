@@ -6,33 +6,6 @@
     android:orientation="vertical"
     android:background="@color/black">
 
-<!--    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="タイトル"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:hint="タイトルを入力"
-            android:text=""
-            android:textColorHint="@color/white"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
-
-    </LinearLayout>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -170,22 +143,5 @@
         android:text="登録"
         android:textColor="@color/white"/>
 
-    <Button
-        android:id="@+id/notification_button"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:background="@color/black"
-        android:text="通知テスト"
-        android:textColor="@color/white"/>
-
-    <Button
-        android:id="@+id/notification_cancel_button"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:background="@color/black"
-        android:text="通知キャンセル"
-        android:textColor="@color/white"/>
 </LinearLayout>
 
