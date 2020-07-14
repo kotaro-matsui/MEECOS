@@ -18,7 +18,6 @@ import io.realm.Realm
 
 class ShowCustomerFragment : BaseFragment() {
 
-    // idという変数名で宣言すると、自動で生成されるgetterやsetterが既に存在するメソッドと混同してエラーが起きる…？
     var mId: Int = 0
 
     companion object {
@@ -38,8 +37,9 @@ class ShowCustomerFragment : BaseFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_show_customer, container, false)
 
-        //initしたインスタンスをとってくる
+
         realm = Realm.getDefaultInstance()
+
         val customerObject =
             realm.where(CustomerObject::class.java).equalTo("id", this.mId).findFirst()
 
@@ -47,25 +47,14 @@ class ShowCustomerFragment : BaseFragment() {
         customerHowToRead.text = customerObject!!.howToRead
 
         val customerName = view.findViewById<TextView>(R.id.customer_name)
-        val list: MutableList<String>? = null
         customerName.text = customerObject.name
 
         val customerAddressNumber = view.findViewById<TextView>(R.id.customer_address_number)
         customerAddressNumber.text = customerObject.addressNumber
-
         val customerAddress = view.findViewById<TextView>(R.id.customer_address)
-
         val address = customerObject.topAddress + customerObject.bottomAddress
-        // 1. ファクトリーにおまかせ
-        val t = Spannable.Factory.getInstance().newSpannable(address.toString())
-        // 2. 下線オブジェクト(他にも種類ある)
-        val us = UnderlineSpan()
-        // 3. 装飾セット(装飾オブジェクト、開始位置、終了位置、装飾オブジェクト用？フラグ)
-        t.setSpan(us, 0, address.toString().length, t.getSpanFlags(us))
-        //　下線を引いた文字列をセット
-        customerAddress.text = t
+        customerAddress.text = drawUnderline(address)
         customerAddress.setOnClickListener {
-            // アラート表示
             AlertDialog.Builder(this.activity)
                 .setMessage("経路を検索しますか？")
                 .setNegativeButton("cancel") { _, _ ->
@@ -77,29 +66,74 @@ class ShowCustomerFragment : BaseFragment() {
         }
 
         val customerPhoneNumber = view.findViewById<TextView>(R.id.customer_phone_number)
-        customerPhoneNumber.text = customerObject.phoneNumber
+        customerPhoneNumber.text = drawUnderline(customerObject.phoneNumber)
+        customerPhoneNumber.setOnClickListener {
+            AlertDialog.Builder(this.activity)
+                .setMessage("ダイヤル画面に遷移しますか？")
+                .setNegativeButton("cancel") { _, _ ->
+                }
+                .setPositiveButton("OK") { _, _ ->
+                    switchToDialScreen(customerObject.phoneNumber)
+                }
+                .show()
+        }
 
-        // 削除ボタン
+        val editCustomerButton = view.findViewById<Button>(R.id.customer_edit)
+        editCustomerButton.setOnClickListener {
+            AlertDialog.Builder(this.activity)
+                .setMessage("編集しますか？")
+                .setNegativeButton("cancel") { _, _ ->
+                }
+                .setPositiveButton("OK") { _, _ ->
+                    replaceFragment(EditCustomerFragment.newInstance(mId))
+                }
+                .show()
+        }
+
         val deleteCustomerButton = view.findViewById<Button>(R.id.customer_delete)
         deleteCustomerButton.setOnClickListener {
-            realm.executeTransaction {
-                customerObject.deleteFromRealm()
-            }
-            replaceFragment(CustomerFragment())
+            AlertDialog.Builder(this.activity)
+                .setMessage("本当に削除しますか？")
+                .setNegativeButton("cancel") { _, _ ->
+                }
+                .setPositiveButton("OK") { _, _ ->
+                    realm.executeTransaction {
+                        customerObject.deleteFromRealm()
+                    }
+                    replaceFragment(CustomerFragment())
+                }
+                .show()
         }
 
         setTitle("客先詳細")
         return view
     }
 
-    //大阪駅から、引数に指定した場所への経路検索をGoogleMapで表示
-    private fun connectGoogleMap(place: String) {
+    // 引数の文字列に下線を引く
+    private fun drawUnderline (text: String) : Spannable{
+        // 1. ファクトリーにおまかせ
+        val t = Spannable.Factory.getInstance().newSpannable(text)
+        // 2. 下線オブジェクト(他にも種類ある)
+        val us = UnderlineSpan()
+        // 3. 装飾セット(装飾オブジェクト、開始位置、終了位置、装飾オブジェクト用？フラグ)
+        t.setSpan(us, 0, text.length, t.getSpanFlags(us))
+        return t
+    }
 
-        val uri = Uri.parse("https://www.google.com/maps/dir/大阪駅/$place")
+    // 引数に指定した場所への経路検索をGoogleMapで表示
+    private fun connectGoogleMap(place: String) {
+        val uri = Uri.parse("https://www.google.com/maps/dir/新藤田ビル/$place")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
-
     }
+
+    // 引数の番号をセットしてダイヤル画面に遷移
+    private fun switchToDialScreen(num: String) {
+        val uri = Uri.parse("tel:$num")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+            }
+
 }
 
 
