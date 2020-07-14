@@ -18,18 +18,25 @@ import com.example.meecos.RecyclerView.RecyclerAdapter
 import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
 
 class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
     EditOrDeleteFragment.EditOrDeleteListener{
     private lateinit var realm:Realm
     private lateinit var latestPlans: RealmResults<ScheduleObject>
     private var selectObject: ScheduleObject? = null
-    private var date:String? = null
+    private var date: Date? = null
+    private var strDate:String? = null
 
     companion object {
-        fun newInstance(date:String): PlanListFragment{
+        fun newInstance(strDate:String): PlanListFragment{
             val page = PlanListFragment()
+            val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+            val date = sdFormat.parse(strDate)
             page.date = date
+            page.strDate = strDate
             return page
         }
     }
@@ -40,13 +47,15 @@ class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
         savedInstanceState: Bundle?
     ): View? {
         var view = inflater.inflate(R.layout.fragment_planlist,container,false)
-        setTitle(date +"予定一覧")
+        setTitle(this.strDate + "予定一覧")
 
         //予定表示する処理
         //Realmからレコード取得
         realm = Realm.getDefaultInstance()
+        //TODO:開始日時と終了日時の間で検索する必要があるが、その為にはStartDateとEndDateをDate型にする必要がある
         this.latestPlans = realm.where(ScheduleObject::class.java)
-            .equalTo("startDate", date)
+            .greaterThanOrEqualTo("endDate",date)
+            .lessThanOrEqualTo("startDate",date)
             .sort("startDate")
             .findAll()
 
@@ -74,7 +83,7 @@ class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
             showToast("削除に失敗しました")
             return
         } else {
-            val rpf = newInstance(this.date!!)
+            val rpf = newInstance(this.strDate!!)
             replaceFragment(rpf)
             showToast("削除に成功しました")
         }

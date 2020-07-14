@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 import io.realm.RealmResults
+import java.text.SimpleDateFormat
+import java.util.*
 
 class RecyclerAdapter(private val context: Context,
                       private val itemClickListener: RecyclerViewHolder.ItemClickListener,
@@ -27,12 +29,14 @@ class RecyclerAdapter(private val context: Context,
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         holder?.let {
-            //ここもかえる
+            val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+            val strStartDate = sdFormat.format(itemList[position]?.startDate)
+            val strEndDate = sdFormat.format(itemList[position]?.endDate)
             it.item = itemList[position]
             it.itemRecordIdView.text = itemList[position]?.id.toString()
-            it.itemStartDateView.text = itemList[position]?.startDate
+            it.itemStartDateView.text = strStartDate
             it.itemStartTimeView.text = itemList[position]?.startTime
-            it.itemEndDateView.text = itemList[position]?.endDate
+            it.itemEndDateView.text = strEndDate
             it.itemEndTimeView.text = itemList[position]?.endTime
             it.itemContentsView.text = itemList[position]?.contents
         }

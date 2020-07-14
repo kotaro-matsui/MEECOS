@@ -24,6 +24,7 @@ import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_schedule.*
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -72,15 +73,17 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
 
         //編集の場合、各項目に予め値が入っているようにする
         if(scheduleObj != null){
-            startDateBtn.text = scheduleObj!!.startDate
+            val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+            val strStartDate = sdFormat.format(scheduleObj!!.startDate)
+            val strEndDate = sdFormat.format(scheduleObj!!.endDate)
+            startDateBtn.text = strStartDate
             startTimeBtn.text = scheduleObj!!.startTime
-            endDateBtn.text = scheduleObj!!.endDate
+            endDateBtn.text = strEndDate
             endTimeBtn.text = scheduleObj!!.endTime
             contents.setText(scheduleObj!!.contents)
         }
 
         val submitBtn = view.findViewById<Button>(R.id.plan_submit)
-
         submitBtn.setOnClickListener{
             onSubmitBtnClick(
                 startDateBtn.text.toString(),
@@ -124,21 +127,24 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
             newId = scheduleObj!!.id!!
         }
         try {
+            val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+            val dStartDate = sdFormat.parse(startDate)
+            val dEndDate = sdFormat.parse(endDate)
             realm.executeTransaction{ realm ->
                 if(scheduleObj == null){
                     val target = realm.createObject(ScheduleObject::class.java!!, newId)
-                    target.startDate = startDate
+                    target.startDate = dStartDate
                     target.startTime = startTime
-                    target.endDate = endDate
+                    target.endDate = dEndDate
                     target.endTime = endTime
                     target.contents = contents
                 }else{
                     val target = realm.where(ScheduleObject::class.java)
                         .equalTo("id", scheduleObj!!.id)
                         .findFirst()
-                    target?.startDate = startDate
+                    target?.startDate = dStartDate
                     target?.startTime = startTime
-                    target?.endDate = endDate
+                    target?.endDate = dEndDate
                     target?.endTime = endTime
                     target?.contents = contents
                 }

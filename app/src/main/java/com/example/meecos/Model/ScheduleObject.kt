@@ -6,16 +6,17 @@ import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
+import java.util.*
 
 open class ScheduleObject: RealmObject() {
     @PrimaryKey
     var id : Int? = null
     @Required
-    var startDate: String? = null
+    var startDate: Date? = null
     @Required //RealmではTime型に対応していない為
     var startTime: String? = null
     @Required
-    var endDate: String? = null
+    var endDate: Date? = null
     @Required
     var endTime: String? = null
     @Required
