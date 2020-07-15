@@ -28,9 +28,9 @@
 
         <TextView
             android:id="@+id/planStartTime"
-            android:layout_width="45dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"
+            android:layout_weight="0.15"
             android:text=""
             android:textColor="@color/white" />
         <TextView

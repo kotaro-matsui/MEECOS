@@ -1,11 +1,13 @@
 package com.example.meecos.Activity
 
 import android.Manifest.permission.*
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -30,6 +32,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import com.example.meecos.Fragment.Customer.CustomerFragment
+import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(){
 
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity(){
     private var pending: PendingIntent? = null
     private val requestCode = 1
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -97,6 +101,7 @@ class MainActivity : AppCompatActivity(){
                 ACCESS_NETWORK_STATE),
             PERMISSIONS_CODE)
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return true
     }

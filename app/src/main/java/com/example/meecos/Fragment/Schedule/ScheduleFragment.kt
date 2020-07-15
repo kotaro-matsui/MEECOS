@@ -6,13 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.CalendarView
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
@@ -24,6 +23,8 @@ import com.example.meecos.RecyclerView.RecyclerAdapter
 import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
+import io.realm.Sort
+import kotlinx.android.synthetic.main.app_bar_main.*
 
 
 class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
@@ -41,8 +42,10 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_schedule, container, false)
+        setHasOptionsMenu(true)
+        val view = inflater.inflate(R.layout.fragment_schedule, container, false)
         setTitle("スケジュール")
+
         val calendarView = view.findViewById<CalendarView>(R.id.calender)
 
         //日付を選択した時にその日付の予定を表示する
@@ -55,19 +58,21 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
             (activity as MainActivity).replaceFragment(plf)
         }
 
-        //予定新規作成画面への遷移
+/*        //予定新規作成画面への遷移
         val newPlanBtn = view.findViewById<ImageButton>(R.id.newPlan)
-        newPlanBtn.setOnClickListener(onCreatePlanBtn)
+        newPlanBtn.setOnClickListener(onCreatePlanBtn)*/
 
         //予定表示する処理
         //Realmからレコード取得
         realm = Realm.getDefaultInstance()
+        //startDate,startTime,endDate,endTimeで昇順でSortする為の設定
+        val names = arrayOf("startDate","startTime","endDate","endTime")
+        val sorts = arrayOf(Sort.ASCENDING,Sort.ASCENDING,Sort.ASCENDING,Sort.ASCENDING)
         this.latestPlans = realm.where(ScheduleObject::class.java)
-            .sort("startDate")
-            /*.limit(5)*/
+            .sort(names,sorts)
             .findAll()
 
-        var recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.adapter = RecyclerAdapter(
             (activity as MainActivity),
             this,
@@ -76,7 +81,25 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
             (activity as MainActivity),
             LinearLayoutManager.VERTICAL, false)
 
+        //RecyclerViewに枠線を付ける為の処理
+        val divider =
+            androidx.recyclerview.widget.DividerItemDecoration(recyclerView.context,LinearLayoutManager(activity).orientation)
+        ContextCompat.getDrawable(activity as MainActivity, R.drawable.divider)?.let { divider.setDrawable(it) };
+        recyclerView.addItemDecoration(divider)
         return view
+    }
+
+    //ツールバー右側に＋ボタンを追加する処理
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_item, menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+    //アイコン押した時の処理
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item?.itemId == R.id.newPlan){
+            (activity as MainActivity).replaceFragment(NewPlanFragment(null))
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     //各レコードを押した時の処理
@@ -87,10 +110,11 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         val dialog = EditOrDeleteFragment.newInstance(this.selectObject!!, this,false)
         dialog.show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
-    //新規作成画面への遷移
+/*    //新規作成画面への遷移
     private val onCreatePlanBtn = View.OnClickListener {
         (activity as MainActivity).replaceFragment(NewPlanFragment(null))
-    }
+    }*/
+
     override fun onDialogPositiveClick() {
         if(!ScheduleObject().deleteByID(this.selectObject!!.id!!,context)){
             showToast("削除に失敗しました")
@@ -105,7 +129,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
 
     }
 
-    fun showToast(message: String) {
+    private fun showToast(message: String) {
         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
