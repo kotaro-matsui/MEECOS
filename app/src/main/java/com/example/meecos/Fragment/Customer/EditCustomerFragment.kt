@@ -1,21 +1,20 @@
 package com.example.meecos.Fragment.Customer
 
 import android.app.AlertDialog
+import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import com.example.meecos.Fragment.Base.BaseFragment
-import com.example.meecos.Fragment.Meeting.MeetingRecordFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
@@ -34,7 +33,7 @@ class EditCustomerFragment : BaseFragment() {
 
     lateinit var realm: Realm
 
-    val co = CustomerObject()
+    private val co = CustomerObject()
 
     var mName: EditText? = null
     var mHowToRead: EditText? = null
@@ -58,17 +57,6 @@ class EditCustomerFragment : BaseFragment() {
 
         this.mName = view.findViewById(R.id.customer_name)
         this.mName!!.setText(customerObject!!.name)
-//        this.mName!!.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//                //文字入力の前に行う処理を書く場所
-//            }
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                //文字入力の最中に行う処理を書く場所
-//            }
-//            override fun afterTextChanged(s: Editable?) {
-//                mName!!.setText(s.toString())
-//            }
-//        })
 
         this.mHowToRead = view.findViewById(R.id.customer_how_to_read)
         this.mHowToRead!!.setText(customerObject.howToRead)
@@ -110,11 +98,12 @@ class EditCustomerFragment : BaseFragment() {
     }
 
     private val backButtonClickListener = View.OnClickListener {
+        closeSoftKeyboard()
         replaceFragment(ShowCustomerFragment.newInstance(mId))
     }
 
     private fun searchButtonClickListener(addressNumber: String) {
-
+        closeSoftKeyboard()
         // 郵便番号桁数バリデーションチェック
         if (addressNumber.length != 7) {
             AlertDialog.Builder(this.activity)
@@ -156,6 +145,7 @@ class EditCustomerFragment : BaseFragment() {
         , bottomAddress: String
         , phoneNumber: String
     ) {
+        closeSoftKeyboard()
         // 客先名入力バリデーションチェック
         if (name == "") {
             AlertDialog.Builder(this.activity)
@@ -164,7 +154,6 @@ class EditCustomerFragment : BaseFragment() {
                 .setPositiveButton("OK") { _, _ ->
                 }
                 .show()
-
         }
         // フリガナの全角カタカナバリデーションチェック
         else if (!howToRead.matches("^[\\u30A0-\\u30FF]+$".toRegex())) {
@@ -197,21 +186,23 @@ class EditCustomerFragment : BaseFragment() {
     }
 
     /**
-     * 郵便番号から都道府県・市区町村を検索
+     * 郵便番号から緯度と経度を取得し、対応するAddress取得する
+     * "address.adminArea + address.locality + address.featureName"で都道府県・市区町村を表示
+     * エラーが発生する可能性あり
      */
     private fun searchAddressFromZipCode(zipCode: String): Address? {
         if (zipCode.length != 8) {
             return null
         }
 
-        val geocoder = Geocoder(this.activity, Locale.JAPAN)
+        val gc = Geocoder(this.activity, Locale.JAPAN)
 
-        val address = geocoder.getFromLocationName(zipCode, 1)
+        val address = gc.getFromLocationName(zipCode, 1)
         if (address != null && address.size != 0) {
             // latitudeが緯度、longitudeが軽度
             val latitude = address[0].latitude
             val longitude = address[0].longitude
-            val addressList = geocoder.getFromLocation(latitude, longitude, 100)
+            val addressList = gc.getFromLocation(latitude, longitude, 100)
 
             val filteredList =
                 addressList.filter { x -> x.latitude == latitude && x.longitude == longitude }
@@ -224,6 +215,14 @@ class EditCustomerFragment : BaseFragment() {
             return if (addressList.isEmpty()) address[0] else addressList[0]
         }
         return null
+    }
+
+    /**
+     * キーボードを閉じる処理
+     */
+    private fun closeSoftKeyboard(){
+        val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 
 }

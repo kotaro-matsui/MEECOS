@@ -9,8 +9,8 @@ import android.widget.ImageButton
 import android.widget.SimpleExpandableListAdapter
 import com.example.meecos.Config.GROUP_LIST
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Manager.CustomerInfo
 import com.example.meecos.Manager.DataManager
-import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.*
 import kotlin.collections.ArrayList
@@ -63,7 +63,7 @@ class CustomerFragment : BaseFragment()  {
             intArrayOf(R.id.first_letter),
             childData,
             R.layout.child_list,
-            arrayOf("name"),
+            arrayOf("name", "id"),
             intArrayOf(R.id.customer_name)
         )
 
@@ -93,10 +93,7 @@ class CustomerFragment : BaseFragment()  {
             //initしたインスタンスをとってくる
             realm = Realm.getDefaultInstance()
 
-            val customerObject = realm.where(CustomerObject::class.java).equalTo("name", item["name"].toString()).findFirst()
-            val customerId = customerObject!!.id!!.toInt()
-
-            replaceFragment(ShowCustomerFragment.newInstance(customerId))
+            replaceFragment(ShowCustomerFragment.newInstance(item["id"].toString().toInt()))
 
             false
 
@@ -122,15 +119,16 @@ class CustomerFragment : BaseFragment()  {
 
     }
 
-    // 引数にしたリストで子項目を作成
-    private fun groupingChildList(list: List<String>) {
+    // realmからとってきたcustomerInfoを親項目に振り分け
+    private fun groupingChildList(list: List<CustomerInfo>) {
 
         val childList =
             ArrayList<HashMap<String, String>>()
 
-        for (s in list) {
+        for (ci in list) {
             val child = HashMap<String, String>()
-            child["name"] = s
+            child["name"] = ci.name
+            child["id"] = ci.id
             childList.add(child)
         }
 
