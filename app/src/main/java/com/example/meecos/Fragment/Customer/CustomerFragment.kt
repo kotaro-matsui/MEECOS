@@ -20,8 +20,6 @@ class CustomerFragment : BaseFragment()  {
 
     lateinit var realm : Realm
 
-    private val dm = DataManager()
-
     // 親項目のリスト
     // 親項目は会社名の頭文字をまとめる
     private val groupData =
@@ -47,6 +45,8 @@ class CustomerFragment : BaseFragment()  {
         createGroupList(GROUP_LIST)
 
         // 子項目の作成
+
+        val dm = DataManager()
 
         for (line in dm.createChildList()) {
             if (line != null) {
