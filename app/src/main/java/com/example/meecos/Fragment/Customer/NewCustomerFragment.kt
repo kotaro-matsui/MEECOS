@@ -6,14 +6,13 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
+import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
@@ -21,20 +20,9 @@ import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class EditCustomerFragment : BaseFragment() {
-    var mId: Int = 0
-
-    companion object {
-        fun newInstance(id: Int): EditCustomerFragment {
-            val fragment = EditCustomerFragment()
-            fragment.mId = id
-            return fragment
-        }
-    }
+class NewCustomerFragment : BaseFragment() {
 
     lateinit var realm: Realm
-
-    private val co = CustomerObject()
 
     var mName: EditText? = null
     var mHowToRead: EditText? = null
@@ -45,46 +33,38 @@ class EditCustomerFragment : BaseFragment() {
 
     private var mBackButton: ImageButton? = null
     private var mSearchButton: Button? = null
-    private var mEditButton: Button? = null
+    private var mCreateButton: Button? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_edit_customer, container, false)
+        val view = inflater.inflate(R.layout.fragment_new_customer, container, false)
 
-        val customerObject = co.findCustomerById(mId)
+        this.mName = view.findViewById<EditText>(R.id.customer_name)
 
-        this.mName = view.findViewById(R.id.customer_name)
-        this.mName!!.setText(customerObject!!.name)
+        this.mHowToRead = view.findViewById<EditText>(R.id.customer_how_to_read)
 
-        this.mHowToRead = view.findViewById(R.id.customer_how_to_read)
-        this.mHowToRead!!.setText(customerObject.howToRead)
+        this.mAddressNumber = view.findViewById<EditText>(R.id.customer_address_number)
 
-        this.mAddressNumber = view.findViewById(R.id.customer_address_number)
-        this.mAddressNumber!!.setText(customerObject.addressNumber)
+        this.mTopAddress = view.findViewById<EditText>(R.id.customer_top_address)
 
-        this.mTopAddress = view.findViewById(R.id.customer_top_address)
-        this.mTopAddress!!.setText(customerObject.topAddress)
+        this.mBottomAddress = view.findViewById<EditText>(R.id.customer_bottom_address)
 
-        this.mBottomAddress = view.findViewById(R.id.customer_bottom_address)
-        this.mBottomAddress!!.setText(customerObject.bottomAddress)
+        this.mPhoneNumber = view.findViewById<EditText>(R.id.customer_phone_number)
 
-        this.mPhoneNumber = view.findViewById(R.id.customer_phone_number)
-        this.mPhoneNumber!!.setText(customerObject.phoneNumber)
-
-        this.mBackButton = view.findViewById(R.id.back_list)
+        this.mBackButton = view.findViewById<ImageButton>(R.id.back_list)
         this.mBackButton!!.setOnClickListener(backButtonClickListener)
 
-        this.mSearchButton = view.findViewById(R.id.search_address)
+        this.mSearchButton = view.findViewById<Button>(R.id.search_address)
         this.mSearchButton!!.setOnClickListener {
             searchButtonClickListener(this.mAddressNumber!!.text.toString())
         }
 
-        this.mEditButton = view.findViewById(R.id.customer_submit)
-        this.mEditButton!!.setOnClickListener {
-            editButtonClickListener(
+        this.mCreateButton = view.findViewById<Button>(R.id.customer_submit)
+        this.mCreateButton!!.setOnClickListener {
+            createButtonClickListener(
                 this.mName!!.text.toString()
                 , this.mHowToRead!!.text.toString()
                 , this.mAddressNumber!!.text.toString()
@@ -94,13 +74,13 @@ class EditCustomerFragment : BaseFragment() {
             )
         }
 
-        setTitle("客先編集")
+        setTitle("客先登録")
         return view
     }
 
     private val backButtonClickListener = View.OnClickListener {
         closeSoftKeyboard()
-        replaceFragment(ShowCustomerFragment.newInstance(mId))
+        replaceFragment(CustomerFragment())
     }
 
     private fun searchButtonClickListener(addressNumber: String) {
@@ -140,7 +120,7 @@ class EditCustomerFragment : BaseFragment() {
         }
     }
 
-    private fun editButtonClickListener(
+    private fun createButtonClickListener(
         name: String
         , howToRead: String
         , addressNumber: String
@@ -166,26 +146,49 @@ class EditCustomerFragment : BaseFragment() {
                 .setPositiveButton("OK") { _, _ ->
                 }
                 .show()
-
-            // 更新処理
         } else {
 
+            //initしたインスタンスをとってくる
             realm = Realm.getDefaultInstance()
-            val customerObject = co.findCustomerById(mId)
 
-            realm.beginTransaction()
+            // トランザクションして登録
+            try {
+                realm.executeTransaction { realm ->
+                    val obj = realm.createObject(CustomerObject::class.java, getNextUserId())
+                    obj.name = name
+                    obj.howToRead = howToRead
+                    obj.addressNumber = addressNumber
+                    obj.topAddress = topAddress
+                    obj.bottomAddress = bottomAddress
+                    obj.phoneNumber = phoneNumber
 
-            customerObject!!.name = name
-            customerObject.howToRead = howToRead
-            customerObject.addressNumber = addressNumber
-            customerObject.topAddress = topAddress
-            customerObject.bottomAddress = bottomAddress
-            customerObject.phoneNumber = phoneNumber
-
-            realm.commitTransaction()
-
-            replaceFragment(ShowCustomerFragment.newInstance(mId))
+                    val toast =
+                        Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT)
+                    toast.setGravity(Gravity.CENTER, 0, -200)
+                    toast.show()
+                }
+            } catch (e: Exception) {
+                println("exceptionエラー:" + e.message)
+            } catch (r: RuntimeException) {
+                println("runtime exceptionエラー:" + r.message)
+            }
         }
+    }
+
+    /**
+     * Idの最大値をインクリメントした値を取得する。
+     * CustomerObjectが1度も作成されていなければ1を取得する。
+     */
+    private fun getNextUserId(): Int {
+        // 初期化
+        var nextUserId = 1
+        // userIdの最大値を取得
+        val maxUserId: Number? = realm.where(CustomerObject::class.java).max("id")
+        // 1度もデータが作成されていない場合はNULLが返ってくるため、NULLチェックをする
+        if (maxUserId != null) {
+            nextUserId = maxUserId.toInt() + 1
+        }
+        return nextUserId
     }
 
     /**
@@ -193,6 +196,7 @@ class EditCustomerFragment : BaseFragment() {
      * "address.adminArea + address.locality + address.featureName"で都道府県・市区町村を表示
      * エラーが発生する可能性あり
      */
+
     private fun searchAddressFromZipCode(zipCode: String): Address? {
         if (zipCode.length != 8) {
             return null
@@ -200,6 +204,9 @@ class EditCustomerFragment : BaseFragment() {
 
         val gc = Geocoder(this.activity, Locale.JAPAN)
 
+        /**
+         * 問題のエラー発生個所
+         */
         val address = gc.getFromLocationName(zipCode, 1)
         if (address != null && address.size != 0) {
             // latitudeが緯度、longitudeが軽度
@@ -223,9 +230,10 @@ class EditCustomerFragment : BaseFragment() {
     /**
      * キーボードを閉じる処理
      */
-    private fun closeSoftKeyboard(){
-        val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    private fun closeSoftKeyboard() {
+        val inputManager =
+            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
-
 }
+

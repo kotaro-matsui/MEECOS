@@ -128,6 +128,7 @@ class ShowCustomerFragment : BaseFragment() {
             .setNegativeButton("cancel") { _, _ ->
             }
             .setPositiveButton("OK") { _, _ ->
+                realm = Realm.getDefaultInstance()
                 realm.executeTransaction {
                     customerObject!!.deleteFromRealm()
                 }
