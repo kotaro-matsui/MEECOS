@@ -17,10 +17,10 @@ import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
-import java.io.IOException
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class CreateCustomerFragment : BaseFragment() {
+class NewCustomerFragment : BaseFragment() {
 
     lateinit var realm: Realm
 
@@ -40,7 +40,7 @@ class CreateCustomerFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_create_customer, container, false)
+        val view = inflater.inflate(R.layout.fragment_new_customer, container, false)
 
         this.mName = view.findViewById<EditText>(R.id.customer_name)
 
@@ -98,10 +98,12 @@ class CreateCustomerFragment : BaseFragment() {
             val sb = StringBuilder()
             sb.append(addressNumber)
             sb.insert(3, "-")
-
             Log.d("TAG", "郵便番号の中身は$sb")
 
-            val address = searchAddressFromZipCode(sb.toString())
+            val address = runBlocking {
+                searchAddressFromZipCode(sb.toString())
+            }
+
             // 郵便番号存在バリデーションチェック
             if (address == null) {
                 AlertDialog.Builder(this.activity)
@@ -190,51 +192,47 @@ class CreateCustomerFragment : BaseFragment() {
     }
 
     /**
-         * 郵便番号から緯度と経度を取得し、対応するAddress取得する
-         * "address.adminArea + address.locality + address.featureName"で都道府県・市区町村を表示
-         * エラーが発生する可能性あり
+     * 郵便番号から緯度と経度を取得し、対応するAddress取得する
+     * "address.adminArea + address.locality + address.featureName"で都道府県・市区町村を表示
+     * エラーが発生する可能性あり
+     */
+
+    private fun searchAddressFromZipCode(zipCode: String): Address? {
+        if (zipCode.length != 8) {
+            return null
+        }
+
+        val gc = Geocoder(this.activity, Locale.JAPAN)
+
+        /**
+         * 問題のエラー発生個所
          */
+        val address = gc.getFromLocationName(zipCode, 1)
+        if (address != null && address.size != 0) {
+            // latitudeが緯度、longitudeが軽度
+            val latitude = address[0].latitude
+            val longitude = address[0].longitude
+            val addressList = gc.getFromLocation(latitude, longitude, 100)
 
-        private fun searchAddressFromZipCode(zipCode: String): Address? {
-            if (zipCode.length != 8) {
-                return null
-            }
-
-            val gc = Geocoder(this.activity, Locale.JAPAN)
-
-            try {
-                /**
-                 * 問題のエラー発生個所
-                 */
-                val address = gc.getFromLocationName(zipCode, 1)
-                if (address != null && address.size != 0) {
-                    // latitudeが緯度、longitudeが軽度
-                    val latitude = address[0].latitude
-                    val longitude = address[0].longitude
-                    val addressList = gc.getFromLocation(latitude, longitude, 100)
-
-                    val filteredList =
-                        addressList.filter { x -> x.latitude == latitude && x.longitude == longitude }
-                    val sortedList = filteredList.sortedBy { x -> x.getAddressLine(0).length }
-                    sortedList.forEach { temp ->
-                        if (temp.featureName != zipCode) {
-                            return temp
-                        }
-                    }
-                    return if (addressList.isEmpty()) address[0] else addressList[0]
+            val filteredList =
+                addressList.filter { x -> x.latitude == latitude && x.longitude == longitude }
+            val sortedList = filteredList.sortedBy { x -> x.getAddressLine(0).length }
+            sortedList.forEach { temp ->
+                if (temp.featureName != zipCode) {
+                    return temp
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Log.d("TAG", "問題のエラー。郵便番号の中身は$zipCode")
             }
+            return if (addressList.isEmpty()) address[0] else addressList[0]
+        }
         return null
     }
 
     /**
      * キーボードを閉じる処理
      */
-    private fun closeSoftKeyboard(){
-        val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    private fun closeSoftKeyboard() {
+        val inputManager =
+            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 }

@@ -18,6 +18,7 @@ import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class EditCustomerFragment : BaseFragment() {
@@ -117,10 +118,12 @@ class EditCustomerFragment : BaseFragment() {
             val sb = StringBuilder()
             sb.append(addressNumber)
             sb.insert(3, "-")
-
             Log.d("TAG", "郵便番号の中身は$sb")
 
-            val address = searchAddressFromZipCode(sb.toString())
+            val address = runBlocking {
+                searchAddressFromZipCode(sb.toString())
+            }
+
             // 郵便番号存在バリデーションチェック
             if (address == null) {
                 AlertDialog.Builder(this.activity)
