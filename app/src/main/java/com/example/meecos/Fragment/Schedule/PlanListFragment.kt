@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
@@ -66,6 +67,13 @@ class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
         recyclerView.layoutManager = LinearLayoutManager(
             (activity as MainActivity),
             LinearLayoutManager.VERTICAL, false)
+
+        //RecyclerViewの各アイテムに罫線を付ける処理
+        val divider =
+            androidx.recyclerview.widget.DividerItemDecoration(recyclerView.context,LinearLayoutManager(activity).orientation)
+        ContextCompat.getDrawable(activity as MainActivity, R.drawable.divider)?.let { divider.setDrawable(it) };
+        recyclerView.addItemDecoration(divider)
+
         return view
     }
 
@@ -89,7 +97,6 @@ class PlanListFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener ,
     }
 
     override fun onDialogNegativeClick() {
-
     }
 
     fun showToast(message: String) {
