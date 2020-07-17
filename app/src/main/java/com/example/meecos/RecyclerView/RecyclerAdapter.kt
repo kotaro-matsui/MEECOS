@@ -34,6 +34,7 @@ class RecyclerAdapter(private val context: Context,
             val strEndDate = sdFormat.format(itemList[position]?.endDate)
             it.item = itemList[position]
             it.itemRecordIdView.text = itemList[position]?.id.toString()
+            it.itemTitleView.text = itemList[position]?.title
             it.itemStartDateView.text = strStartDate
             it.itemStartTimeView.text = itemList[position]?.startTime
             it.itemEndDateView.text = strEndDate

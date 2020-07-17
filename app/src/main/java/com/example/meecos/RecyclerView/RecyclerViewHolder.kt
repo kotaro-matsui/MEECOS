@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
+import org.w3c.dom.Text
 
 class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -14,6 +15,7 @@ class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
     var item: ScheduleObject? = null
     val itemRecordIdView: TextView = view.findViewById(R.id.recordId)
+    val itemTitleView:TextView = view.findViewById(R.id.mTitle)
     val itemStartDateView: TextView = view.findViewById(R.id.planStartDate)
     val itemStartTimeView: TextView = view.findViewById(R.id.planStartTime)
     val itemEndDateView: TextView = view.findViewById(R.id.planEndDate)

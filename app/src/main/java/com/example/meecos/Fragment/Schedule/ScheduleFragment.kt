@@ -4,19 +4,19 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.CalendarView
-import android.widget.ImageButton
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Dialog.EditOrDeleteFragment
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Fragment.Schedule.compactcalendar.CompactCalendarView
+import com.example.meecos.Fragment.Schedule.compactcalendar.Event
 import com.example.meecos.Model.ScheduleObject
 import com.example.meecos.R
 import com.example.meecos.RecyclerView.RecyclerAdapter
@@ -24,7 +24,11 @@ import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.Sort
-import kotlinx.android.synthetic.main.app_bar_main.*
+import java.sql.Time
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Month
+import java.util.*
 
 
 class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
@@ -46,27 +50,53 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         val view = inflater.inflate(R.layout.fragment_schedule, container, false)
         setTitle("スケジュール")
 
-        val calendarView = view.findViewById<CalendarView>(R.id.calender)
+        /*val calendarView = view.findViewById<CalendarView>(R.id.calender)*/
 
-        //日付を選択した時にその日付の予定を表示する
-        calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
+        //外部ライブラリのカレンダー使用
+        val compactCalendarView = view.findViewById<CompactCalendarView>(R.id.compactcalendar_view)
+        compactCalendarView.setFirstDayOfWeek(Calendar.SUNDAY)
+        compactCalendarView.setListener(object : CompactCalendarView.CompactCalendarViewListener {
+            override fun onDayClick(dateClicked: Date) {
+                /*val events: List<Event> =
+                    compactCalendarView.getEvents(dateClicked)*/
+                val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+                val date = sdFormat.format(dateClicked)
+                val plf:PlanListFragment = PlanListFragment.newInstance(date)
+                (activity as MainActivity).replaceFragment(plf)
+            }
 
-            val trueMonth = month + 1
-            val strMonth = if(trueMonth < 10) "0$trueMonth" else trueMonth.toString()
-            val date = "$year-$strMonth-$dayOfMonth"
-            val plf:PlanListFragment = PlanListFragment.newInstance(date)
-            (activity as MainActivity).replaceFragment(plf)
-        }
+            override fun onMonthScroll(firstDayOfNewMonth: Date) {
+            }
+        })
 
         //予定表示する処理
-        //Realmからレコード取得
+        //Realmから終了日が本日以降のレコード取得
         realm = Realm.getDefaultInstance()
         //startDate,startTime,endDate,endTimeで昇順でSortする為の設定
         val names = arrayOf("startDate","startTime","endDate","endTime")
         val sorts = arrayOf(Sort.ASCENDING,Sort.ASCENDING,Sort.ASCENDING,Sort.ASCENDING)
         this.latestPlans = realm.where(ScheduleObject::class.java)
+            .greaterThanOrEqualTo("endDate",Date(System.currentTimeMillis()-86400000))
             .sort(names,sorts)
             .findAll()
+
+        /*カレンダー上の日付に、予定がある日は白丸がつく処理　今は開始日でしか判断できていない
+        * 最初にstartDateとendDateを取得し、あいだの日付すべてを取得して、その日数分だけloopを回す？*/
+        var ev: Event
+        for(item in latestPlans){
+            val sDate = item.startDate!!.time
+            val eDate = item.endDate!!.time
+            val dates = (eDate - sDate)/86400000
+            for(i in 1..dates){
+                ev =
+                    Event(
+                        Color.WHITE,
+                        item.startDate?.time!! + i*86400000,
+                        item.contents
+                    )
+                compactCalendarView.addEvent(ev)
+            }
+        }
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.adapter = RecyclerAdapter(
@@ -129,7 +159,6 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         pending = PendingIntent.getBroadcast(
             context, requestCode, intent, notifiId
         )
-
         // アラームを解除する
         am =
             activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager?

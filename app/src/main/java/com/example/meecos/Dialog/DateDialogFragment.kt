@@ -21,9 +21,10 @@ class DateDialogFragment(val textView: TextView,val view1: View) : DialogFragmen
     /*  DatePickerDialogを返却するメソッド
         このメソッドで、日付を選択した後の処理や、日付範囲、Dialogのタイトルを設定する */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dateDefault = context?.getString(R.string.schedule_date)
 //      現在日付を取得
         val calendar = Calendar.getInstance()
+        val dateDefault = context?.getString(R.string.schedule_date)
+
         return DatePickerDialog(
             activity as MainActivity,
             theme,

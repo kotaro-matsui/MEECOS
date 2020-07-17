@@ -49,6 +49,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         val view = inflater.inflate(R.layout.fragment_newplan, container,false)
         if(scheduleObj != null) setTitle("予定編集") else setTitle("予定作成")
 
+        val mTitle = view.findViewById<EditText>(R.id.titleEdit)
         //日付をダイアログで選択できるようにする
         val startDateBtn = view.findViewById<TextView>(R.id.startDateBtn)
         val endDateBtn = view.findViewById<TextView>(R.id.endDateBtn)
@@ -71,21 +72,35 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
 
         val contents = view.findViewById<EditText>(R.id.contents)
 
-        //編集の場合、各項目に予め値が入っているようにする
+        //編集の場合、各項目に予め値が入っているようにする。新規の場合、現在日時が入っているようにする
+        val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+        val sdTimeFormat = SimpleDateFormat("HH:mm",Locale.JAPAN)
         if(scheduleObj != null){
-            val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
             val strStartDate = sdFormat.format(scheduleObj!!.startDate!!)
             val strEndDate = sdFormat.format(scheduleObj!!.endDate!!)
+
+            mTitle.setText(scheduleObj!!.title)
             startDateBtn.text = strStartDate
             startTimeBtn.text = scheduleObj!!.startTime
             endDateBtn.text = strEndDate
             endTimeBtn.text = scheduleObj!!.endTime
             contents.setText(scheduleObj!!.contents)
+        }else{
+            val strStartDate = sdFormat.format(Date())
+            val strStartTime = sdTimeFormat.format(Date())
+            val strEndDate = sdFormat.format(Date())
+            val strEndTime = sdTimeFormat.format(Date())
+
+            startDateBtn.text = strStartDate
+            startTimeBtn.text = strStartTime
+            endDateBtn.text = strEndDate
+            endTimeBtn.text = strEndTime
         }
 
         val submitBtn = view.findViewById<Button>(R.id.plan_submit)
         submitBtn.setOnClickListener{
             onSubmitBtnClick(
+                mTitle.text.toString(),
                 startDateBtn.text.toString(),
                 startTimeBtn.text.toString(),
                 endDateBtn.text.toString(),
@@ -111,7 +126,12 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
     }
 
     //予定変更・追加処理
-    private fun onSubmitBtnClick(startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
+    private fun onSubmitBtnClick(mTitle:String?,startDate:String,startTime:String,endDate:String,endTime:String,contents:String){
+        if(mTitle == "") {
+            showToast("タイトルを入力してください")
+            return
+        }
+
         val sDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_DATE)
         val sTime = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
         val eDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE)
@@ -120,9 +140,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         //現在時刻より前の予定を登録した場合、通知をしないようにする為の前処理
         val nowTime = Calendar.getInstance()
         nowTime.add(Calendar.HOUR,-1)
-        println(nowTime.timeInMillis)
         sCalendar.set(sDate.year,sDate.monthValue - 1,sDate.dayOfMonth,sTime.hour -1 ,sTime.minute,0)
-        println(sCalendar.timeInMillis)
         val eCalendar = Calendar.getInstance()
         eCalendar.set(eDate.year,eDate.monthValue - 1,eDate.dayOfMonth,eTime.hour -1 ,eTime.minute,0)
         if(sCalendar.timeInMillis > eCalendar.timeInMillis){
@@ -146,6 +164,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
             realm.executeTransaction{ realm ->
                 if(scheduleObj == null){
                     val target = realm.createObject(ScheduleObject::class.java, newId)
+                    target.title = mTitle
                     target.startDate = dStartDate
                     target.startTime = startTime
                     target.endDate = dEndDate
@@ -155,6 +174,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                     val target = realm.where(ScheduleObject::class.java)
                         .equalTo("id", scheduleObj!!.id)
                         .findFirst()
+                    target?.title = mTitle
                     target?.startDate = dStartDate
                     target?.startTime = startTime
                     target?.endDate = dEndDate

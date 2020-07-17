@@ -12,6 +12,8 @@ open class ScheduleObject: RealmObject() {
     @PrimaryKey
     var id : Int? = null
     @Required
+    var title: String? = null
+    @Required
     var startDate: Date? = null
     @Required //RealmではTime型に対応していない為
     var startTime: String? = null
@@ -19,7 +21,6 @@ open class ScheduleObject: RealmObject() {
     var endDate: Date? = null
     @Required
     var endTime: String? = null
-    @Required
     var contents: String? = null
 
     fun deleteByID (id: Int, context: Context?): Boolean {
