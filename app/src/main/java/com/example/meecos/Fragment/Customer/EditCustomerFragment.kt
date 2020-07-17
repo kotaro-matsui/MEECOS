@@ -6,15 +6,15 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Manager.DataManager
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
@@ -35,6 +35,7 @@ class EditCustomerFragment : BaseFragment() {
     lateinit var realm: Realm
 
     private val co = CustomerObject()
+    private val dm = DataManager()
 
     var mName: EditText? = null
     var mHowToRead: EditText? = null
@@ -43,7 +44,6 @@ class EditCustomerFragment : BaseFragment() {
     var mBottomAddress: EditText? = null
     var mPhoneNumber: EditText? = null
 
-    private var mBackButton: ImageButton? = null
     private var mSearchButton: Button? = null
     private var mEditButton: Button? = null
 
@@ -52,6 +52,7 @@ class EditCustomerFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_edit_customer, container, false)
 
         val customerObject = co.findCustomerById(mId)
@@ -74,9 +75,6 @@ class EditCustomerFragment : BaseFragment() {
         this.mPhoneNumber = view.findViewById(R.id.customer_phone_number)
         this.mPhoneNumber!!.setText(customerObject.phoneNumber)
 
-        this.mBackButton = view.findViewById(R.id.back_list)
-        this.mBackButton!!.setOnClickListener(backButtonClickListener)
-
         this.mSearchButton = view.findViewById(R.id.search_address)
         this.mSearchButton!!.setOnClickListener {
             searchButtonClickListener(this.mAddressNumber!!.text.toString())
@@ -98,9 +96,18 @@ class EditCustomerFragment : BaseFragment() {
         return view
     }
 
-    private val backButtonClickListener = View.OnClickListener {
-        closeSoftKeyboard()
-        replaceFragment(ShowCustomerFragment.newInstance(mId))
+    //ツールバー右側に戻るボタンを追加する処理
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.back_item, menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+    //アイコン押した時の処理
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.back_page){
+            closeSoftKeyboard()
+            replaceFragment(ShowCustomerFragment.newInstance(mId))
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun searchButtonClickListener(addressNumber: String) {
@@ -169,9 +176,9 @@ class EditCustomerFragment : BaseFragment() {
 
             // 更新処理
         } else {
-
             realm = Realm.getDefaultInstance()
             val customerObject = co.findCustomerById(mId)
+            val section = dm.selectSection(howToRead)
 
             realm.beginTransaction()
 
@@ -181,10 +188,11 @@ class EditCustomerFragment : BaseFragment() {
             customerObject.topAddress = topAddress
             customerObject.bottomAddress = bottomAddress
             customerObject.phoneNumber = phoneNumber
+            customerObject.section = section
+            Toast.makeText(activity as MainActivity, "変更が完了しました。", Toast.LENGTH_SHORT)
+                .show()
 
             realm.commitTransaction()
-
-            replaceFragment(ShowCustomerFragment.newInstance(mId))
         }
     }
 

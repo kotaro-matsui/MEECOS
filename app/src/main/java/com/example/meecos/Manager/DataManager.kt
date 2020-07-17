@@ -6,10 +6,18 @@ class CustomerInfo(var name: String, var id: String)
 
 class DataManager {
 
+    private val co = CustomerObject()
+
+    fun createGroupList(): List<String>{
+        val list = mutableListOf<String>()
+        for (customer in co.fetchAllCustomerObject()) {
+            list.add(customer.section)
+        }
+        return ArrayList<String>(HashSet(list))
+    }
+
     //　親項目に振り分けるための、子項目を行ごとに作成してリストに入れ、配列にして返す
     fun createChildList(): Array<MutableList<CustomerInfo>?> {
-
-        val co = CustomerObject()
 
         val linesArray: Array<MutableList<CustomerInfo>?> = arrayOfNulls(11)
 
@@ -69,6 +77,49 @@ class DataManager {
 
     }
 
+    fun selectSection(howToRead: String): String {
+        var section = ""
+        if (howToRead == "") {
+            section = "#"
+        } else {
+            when (howToRead.substring(0, 1)) {
+                "ア", "イ", "ウ", "エ", "オ" -> {
+                    section = "あ"
+                }
+                "カ", "キ", "ク", "ケ", "コ", "ガ", "ギ", "グ", "ゲ", "ゴ" -> {
+                    section = "か"
+                }
+                "サ", "シ", "ス", "セ", "ソ", "ザ", "ジ", "ズ", "ゼ", "ゾ" -> {
+                    section = "さ"
+                }
+                "タ", "チ", "ツ", "テ", "ト", "ダ", "ヂ", "ヅ", "デ", "ド" -> {
+                    section = "た"
+                }
+                "ナ", "ニ", "ヌ", "ネ", "ノ" -> {
+                    section = "な"
+                }
+                "ハ", "ヒ", "フ", "ヘ", "ホ", "バ", "ビ", "ブ", "ベ", "ボ", "パ", "ピ", "プ", "ペ", "ポ" -> {
+                    section = "は"
+                }
+                "マ", "ミ", "ム", "メ", "モ" -> {
+                    section = "ま"
+                }
+                "ヤ", "ユ", "ヨ" -> {
+                    section = "や"
+                }
+                "ラ", "リ", "ル", "レ", "ロ" -> {
+                    section = "ら"
+                }
+                "ワ", "ヲ", "ン" -> {
+                    section = "わ"
+                }
+                else -> {
+                    section = "#"
+                }
+            }
+        }
+        return section
+    }
 }
 
 

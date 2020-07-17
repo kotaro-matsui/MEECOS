@@ -10,20 +10,14 @@ open class CustomerObject: RealmObject() {
 
     @PrimaryKey
     var id : Int? = null
-
     @Required
     var name : String = ""
-
     var howToRead : String = ""
-
     var addressNumber : String = ""
-
     var topAddress : String = ""
-
     var bottomAddress : String = ""
-
     var phoneNumber : String = ""
-
+    var section : String = ""
 
     // 全てのcustomerObjectをフリガナの昇順にソートし、その結果を返す
     fun fetchAllCustomerObject() : RealmResults<CustomerObject> {

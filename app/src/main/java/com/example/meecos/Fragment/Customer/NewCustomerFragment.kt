@@ -6,23 +6,24 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.example.meecos.Activity.MainActivity
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Fragment.home.HomeFragment
+import com.example.meecos.Listener.OnBackKeyPressedListener
+import com.example.meecos.Manager.DataManager
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class NewCustomerFragment : BaseFragment() {
-
+class NewCustomerFragment : BaseFragment(), OnBackKeyPressedListener {
     lateinit var realm: Realm
+
+    private val dm = DataManager()
 
     var mName: EditText? = null
     var mHowToRead: EditText? = null
@@ -31,7 +32,6 @@ class NewCustomerFragment : BaseFragment() {
     var mBottomAddress: EditText? = null
     var mPhoneNumber: EditText? = null
 
-    private var mBackButton: ImageButton? = null
     private var mSearchButton: Button? = null
     private var mCreateButton: Button? = null
 
@@ -40,24 +40,22 @@ class NewCustomerFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_new_customer, container, false)
 
-        this.mName = view.findViewById<EditText>(R.id.customer_name)
+        this.mName = view.findViewById(R.id.customer_name)
 
-        this.mHowToRead = view.findViewById<EditText>(R.id.customer_how_to_read)
+        this.mHowToRead = view.findViewById(R.id.customer_how_to_read)
 
-        this.mAddressNumber = view.findViewById<EditText>(R.id.customer_address_number)
+        this.mAddressNumber = view.findViewById(R.id.customer_address_number)
 
-        this.mTopAddress = view.findViewById<EditText>(R.id.customer_top_address)
+        this.mTopAddress = view.findViewById(R.id.customer_top_address)
 
-        this.mBottomAddress = view.findViewById<EditText>(R.id.customer_bottom_address)
+        this.mBottomAddress = view.findViewById(R.id.customer_bottom_address)
 
-        this.mPhoneNumber = view.findViewById<EditText>(R.id.customer_phone_number)
+        this.mPhoneNumber = view.findViewById(R.id.customer_phone_number)
 
-        this.mBackButton = view.findViewById<ImageButton>(R.id.back_list)
-        this.mBackButton!!.setOnClickListener(backButtonClickListener)
-
-        this.mSearchButton = view.findViewById<Button>(R.id.search_address)
+        this.mSearchButton = view.findViewById(R.id.search_address)
         this.mSearchButton!!.setOnClickListener {
             searchButtonClickListener(this.mAddressNumber!!.text.toString())
         }
@@ -78,9 +76,18 @@ class NewCustomerFragment : BaseFragment() {
         return view
     }
 
-    private val backButtonClickListener = View.OnClickListener {
-        closeSoftKeyboard()
-        replaceFragment(CustomerFragment())
+    //ツールバー右側に＋ボタンを追加する処理
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.back_item, menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+    //アイコン押した時の処理
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.back_page){
+            closeSoftKeyboard()
+            replaceFragment(CustomerFragment())
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun searchButtonClickListener(addressNumber: String) {
@@ -130,7 +137,7 @@ class NewCustomerFragment : BaseFragment() {
     ) {
         closeSoftKeyboard()
         // 客先名入力バリデーションチェック
-        if (name == "") {
+        if (name.isBlank()) {
             AlertDialog.Builder(this.activity)
                 .setTitle("入力エラー")
                 .setMessage("客先名を入力して下さい")
@@ -147,9 +154,9 @@ class NewCustomerFragment : BaseFragment() {
                 }
                 .show()
         } else {
-
-            //initしたインスタンスをとってくる
             realm = Realm.getDefaultInstance()
+
+            val section = dm.selectSection(howToRead)
 
             // トランザクションして登録
             try {
@@ -161,11 +168,9 @@ class NewCustomerFragment : BaseFragment() {
                     obj.topAddress = topAddress
                     obj.bottomAddress = bottomAddress
                     obj.phoneNumber = phoneNumber
-
-                    val toast =
-                        Toast.makeText(activity as MainActivity, "登録に成功しました。", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER, 0, -200)
-                    toast.show()
+                    obj.section = section
+                    Toast.makeText(activity as MainActivity, "登録が完了しました。", Toast.LENGTH_SHORT)
+                        .show()
                 }
             } catch (e: Exception) {
                 println("exceptionエラー:" + e.message)
@@ -235,5 +240,10 @@ class NewCustomerFragment : BaseFragment() {
             activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
+
+    override fun onBackPressed() {
+        replaceFragment(CustomerFragment())
+    }
+
 }
 
