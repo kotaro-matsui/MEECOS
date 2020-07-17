@@ -58,10 +58,6 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
             (activity as MainActivity).replaceFragment(plf)
         }
 
-/*        //予定新規作成画面への遷移
-        val newPlanBtn = view.findViewById<ImageButton>(R.id.newPlan)
-        newPlanBtn.setOnClickListener(onCreatePlanBtn)*/
-
         //予定表示する処理
         //Realmからレコード取得
         realm = Realm.getDefaultInstance()
@@ -110,10 +106,6 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         val dialog = EditOrDeleteFragment.newInstance(this.selectObject!!, this,false)
         dialog.show((activity as MainActivity).supportFragmentManager, view::class.java.simpleName)
     }
-/*    //新規作成画面への遷移
-    private val onCreatePlanBtn = View.OnClickListener {
-        (activity as MainActivity).replaceFragment(NewPlanFragment(null))
-    }*/
 
     override fun onDialogPositiveClick() {
         if(!ScheduleObject().deleteByID(this.selectObject!!.id!!,context)){
@@ -126,7 +118,6 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
     }
 
     override fun onDialogNegativeClick() {
-
     }
 
     private fun showToast(message: String) {
