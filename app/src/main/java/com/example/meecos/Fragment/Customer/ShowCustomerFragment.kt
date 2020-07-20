@@ -46,6 +46,7 @@ class ShowCustomerFragment : BaseFragment() {
     ): View? {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_show_customer, container, false)
+        view.setBackEvent(onBackListener)
 
         val customerObject = co.findCustomerById(mId)
 
@@ -156,6 +157,12 @@ class ShowCustomerFragment : BaseFragment() {
         val uri = Uri.parse("tel:$num")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    private val onBackListener = object : BackEventListener {
+        override fun onBackClick() {
+            replaceFragment(CustomerFragment())
+        }
     }
 
 }

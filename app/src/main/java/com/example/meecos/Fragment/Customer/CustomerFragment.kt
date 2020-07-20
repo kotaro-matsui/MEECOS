@@ -7,14 +7,13 @@ import android.widget.ExpandableListView
 import android.widget.SimpleExpandableListAdapter
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Fragment.home.HomeFragment
-import com.example.meecos.Listener.OnBackKeyPressedListener
 import com.example.meecos.Manager.CustomerInfo
 import com.example.meecos.Manager.DataManager
 import com.example.meecos.R
 import io.realm.Realm
 
 
-class CustomerFragment : BaseFragment(), OnBackKeyPressedListener {
+class CustomerFragment : BaseFragment() {
 
     lateinit var realm: Realm
     private val dm = DataManager()
@@ -33,6 +32,7 @@ class CustomerFragment : BaseFragment(), OnBackKeyPressedListener {
     ): View? {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_customer, container, false)
+        view.setBackEvent(onBackListener)
 
         //ExpandableListViewの作成
 
@@ -48,11 +48,13 @@ class CustomerFragment : BaseFragment(), OnBackKeyPressedListener {
 
         // 親リスト、子リストを含んだAdapterを生成
         val adapter = SimpleExpandableListAdapter(
-            requireActivity().applicationContext,
+            activity,
+
             groupData,
             R.layout.parent_list,
             arrayOf("group"),
             intArrayOf(R.id.first_letter),
+
             childData,
             R.layout.child_list,
             arrayOf("name", "id"),
@@ -62,7 +64,6 @@ class CustomerFragment : BaseFragment(), OnBackKeyPressedListener {
         // viewにセット
         val sortList = view.findViewById(R.id.customer_list) as ExpandableListView
         sortList.setAdapter(adapter)
-        Log.d("TAG", "fragmentのtagは" + CustomerFragment().tag)
 
         // 親項目をクリックした際に、子項目が閉じたり開いたりする処理について
         // true -> 閉じたり開いたりしない
@@ -130,9 +131,13 @@ class CustomerFragment : BaseFragment(), OnBackKeyPressedListener {
         }
     }
 
-    override fun onBackPressed() {
-        replaceFragment(HomeFragment())
+    private val onBackListener = object : BackEventListener {
+        override fun onBackClick() {
+            replaceFragment(HomeFragment())
+        }
     }
+
+
 
 //    override fun onDestroy() {
 //        super.onDestroy()

@@ -105,14 +105,6 @@ class MainActivity : AppCompatActivity(){
 
     override fun onBackPressed() {
 
-        val fragment =
-            supportFragmentManager.findFragmentByTag("handlingBackPressed")
-        Log.d("TAG", "真偽の結果は" + (fragment is OnBackKeyPressedListener).toString())
-        Log.d("TAG", "toStringは" + fragment.toString())
-        if (fragment is OnBackKeyPressedListener) {
-            (fragment as OnBackKeyPressedListener?)!!.onBackPressed()
-        }
-        super.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -127,7 +119,6 @@ class MainActivity : AppCompatActivity(){
     fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.addToBackStack(null)
         fragmentTransaction.replace(R.id.nav_host_fragment, fragment)
         fragmentTransaction.commit()
         drawer_layout.closeDrawer(GravityCompat.START)

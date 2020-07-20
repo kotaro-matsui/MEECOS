@@ -20,7 +20,7 @@ import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class NewCustomerFragment : BaseFragment(), OnBackKeyPressedListener {
+class NewCustomerFragment : BaseFragment() {
     lateinit var realm: Realm
 
     private val dm = DataManager()
@@ -42,6 +42,10 @@ class NewCustomerFragment : BaseFragment(), OnBackKeyPressedListener {
     ): View? {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_new_customer, container, false)
+        view.setBackEvent(onBackListener)
+
+        view.isFocusableInTouchMode = true
+        view.requestFocus()
 
         this.mName = view.findViewById(R.id.customer_name)
 
@@ -241,8 +245,10 @@ class NewCustomerFragment : BaseFragment(), OnBackKeyPressedListener {
         inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 
-    override fun onBackPressed() {
-        replaceFragment(CustomerFragment())
+    private val onBackListener = object : BackEventListener {
+        override fun onBackClick() {
+            replaceFragment(CustomerFragment())
+        }
     }
 
 }

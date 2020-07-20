@@ -54,6 +54,7 @@ class EditCustomerFragment : BaseFragment() {
     ): View? {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_edit_customer, container, false)
+        view.setBackEvent(onBackListener)
 
         val customerObject = co.findCustomerById(mId)
 
@@ -234,6 +235,12 @@ class EditCustomerFragment : BaseFragment() {
     private fun closeSoftKeyboard(){
         val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+    }
+
+    private val onBackListener = object : BackEventListener {
+        override fun onBackClick() {
+            replaceFragment(ShowCustomerFragment.newInstance(mId))
+        }
     }
 
 }
