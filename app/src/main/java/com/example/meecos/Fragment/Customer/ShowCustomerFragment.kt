@@ -4,11 +4,10 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.Spannable
-import android.text.style.UnderlineSpan
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
+import com.example.meecos.Config.drawUnderline
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
@@ -61,11 +60,11 @@ class ShowCustomerFragment : BaseFragment() {
 
         this.mAddress = view.findViewById(R.id.customer_address)
         this.mAddress!!.text =
-            drawUnderline(customerObject.topAddress + customerObject.bottomAddress)
+            (customerObject.topAddress + customerObject.bottomAddress).drawUnderline()
         this.mAddress!!.setOnClickListener(addressTextClickListener)
 
         this.mPhoneNumber = view.findViewById(R.id.customer_phone_number)
-        this.mPhoneNumber!!.text = drawUnderline(customerObject.phoneNumber)
+        this.mPhoneNumber!!.text = customerObject.phoneNumber.drawUnderline()
         this.mPhoneNumber!!.setOnClickListener(phoneNumberTextClickListener)
 
         this.mEditButton = view.findViewById(R.id.customer_edit)
@@ -92,6 +91,12 @@ class ShowCustomerFragment : BaseFragment() {
     }
 
     private val addressTextClickListener = View.OnClickListener {
+//        this.cDialog = CommonDialogFragment.newInstance(
+//            "確認",
+//            "経路を検索しますか？",
+//            this
+//        )
+//        this.cDialog!!.show(parentFragmentManager, "dialog")
         AlertDialog.Builder(this.activity)
             .setMessage("経路を検索しますか？")
             .setNegativeButton("cancel") { _, _ ->
@@ -103,6 +108,12 @@ class ShowCustomerFragment : BaseFragment() {
     }
 
     private val phoneNumberTextClickListener = View.OnClickListener {
+//        val cDialog = CommonDialogFragment.newInstance(
+//            "確認",
+//            "ダイヤル画面に遷移しますか？",
+//            this
+//        )
+//        cDialog.show(parentFragmentManager, "dialog")
         AlertDialog.Builder(this.activity)
             .setMessage("ダイヤル画面に遷移しますか？")
             .setNegativeButton("cancel") { _, _ ->
@@ -119,7 +130,12 @@ class ShowCustomerFragment : BaseFragment() {
 
     private val deleteButtonClickListener = View.OnClickListener {
         val customerObject = co.findCustomerById(mId)
-
+//        this.cDialog = CommonDialogFragment.newInstance(
+//            "確認",
+//            "本当に削除しますか？",
+//            this
+//        )
+//        this.cDialog!!.show(parentFragmentManager, "dialog")
         AlertDialog.Builder(this.activity)
             .setMessage("本当に削除しますか？")
             .setNegativeButton("cancel") { _, _ ->
@@ -132,17 +148,6 @@ class ShowCustomerFragment : BaseFragment() {
                 replaceFragment(CustomerFragment())
             }
             .show()
-    }
-
-    // 引数の文字列に下線を引く
-    private fun drawUnderline(text: String): Spannable {
-        // 1. ファクトリーにおまかせ
-        val t = Spannable.Factory.getInstance().newSpannable(text)
-        // 2. 下線オブジェクト(他にも種類ある)
-        val us = UnderlineSpan()
-        // 3. 装飾セット(装飾オブジェクト、開始位置、終了位置、装飾オブジェクト用？フラグ)
-        t.setSpan(us, 0, text.length, t.getSpanFlags(us))
-        return t
     }
 
     // 引数に指定した場所への経路検索をGoogleMapで表示
@@ -164,6 +169,16 @@ class ShowCustomerFragment : BaseFragment() {
             replaceFragment(CustomerFragment())
         }
     }
+
+//    override fun onOkClick() {
+//        super.onOkClick()
+//        this.cDialog!!.dismiss()
+//    }
+//
+//    override fun onNoClick() {
+//        super.onNoClick()
+//        this.cDialog!!.dismiss()
+//    }
 
 }
 

@@ -6,7 +6,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -23,12 +22,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.meecos.Config.PERMISSIONS_CODE
 import com.example.meecos.Fragment.Customer.CustomerFragment
-import com.example.meecos.Fragment.Customer.NewCustomerFragment
 import com.example.meecos.Fragment.Meeting.MeetingNotesFragment
 import com.example.meecos.Fragment.Profile.ProfileFragment
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
 import com.example.meecos.Fragment.home.HomeFragment
-import com.example.meecos.Listener.OnBackKeyPressedListener
 import com.example.meecos.R
 import com.google.android.material.navigation.NavigationView
 import io.realm.Realm

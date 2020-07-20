@@ -1,7 +1,6 @@
 package com.example.meecos.Fragment.Customer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ExpandableListView
 import android.widget.SimpleExpandableListAdapter
@@ -121,7 +120,6 @@ class CustomerFragment : BaseFragment() {
             ArrayList<HashMap<String, String>>()
         if (list.isNotEmpty()) {
             for (ci in list) {
-                Log.d("TAG", ci.name + "を振り分け中")
                 val child = HashMap<String, String>()
                 child["name"] = ci.name
                 child["id"] = ci.id

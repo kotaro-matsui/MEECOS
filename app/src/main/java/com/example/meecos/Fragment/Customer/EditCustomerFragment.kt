@@ -1,27 +1,26 @@
 package com.example.meecos.Fragment.Customer
 
-import android.app.AlertDialog
-import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.meecos.Activity.MainActivity
+import com.example.meecos.Config.SECTION_CHAR
+import com.example.meecos.Config.closeSoftKeyboard
+import com.example.meecos.Config.selectLineNumber
+import com.example.meecos.Dialog.ErrorDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
-import com.example.meecos.Manager.DataManager
 import com.example.meecos.Model.CustomerObject
 import com.example.meecos.R
 import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class EditCustomerFragment : BaseFragment() {
+class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogListener {
     var mId: Int = 0
 
     companion object {
@@ -35,7 +34,8 @@ class EditCustomerFragment : BaseFragment() {
     lateinit var realm: Realm
 
     private val co = CustomerObject()
-    private val dm = DataManager()
+
+    private var mView: View? = null
 
     var mName: EditText? = null
     var mHowToRead: EditText? = null
@@ -46,6 +46,7 @@ class EditCustomerFragment : BaseFragment() {
 
     private var mSearchButton: Button? = null
     private var mEditButton: Button? = null
+    private var eDialog: ErrorDialogFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,35 +54,35 @@ class EditCustomerFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.fragment_edit_customer, container, false)
-        view.setBackEvent(onBackListener)
+        this.mView = inflater.inflate(R.layout.fragment_edit_customer, container, false)
+        this.mView!!.setBackEvent(onBackListener)
 
         val customerObject = co.findCustomerById(mId)
 
-        this.mName = view.findViewById(R.id.customer_name)
+        this.mName = this.mView!!.findViewById(R.id.customer_name)
         this.mName!!.setText(customerObject!!.name)
 
-        this.mHowToRead = view.findViewById(R.id.customer_how_to_read)
+        this.mHowToRead = this.mView!!.findViewById(R.id.customer_how_to_read)
         this.mHowToRead!!.setText(customerObject.howToRead)
 
-        this.mAddressNumber = view.findViewById(R.id.customer_address_number)
+        this.mAddressNumber = this.mView!!.findViewById(R.id.customer_address_number)
         this.mAddressNumber!!.setText(customerObject.addressNumber)
 
-        this.mTopAddress = view.findViewById(R.id.customer_top_address)
+        this.mTopAddress = this.mView!!.findViewById(R.id.customer_top_address)
         this.mTopAddress!!.setText(customerObject.topAddress)
 
-        this.mBottomAddress = view.findViewById(R.id.customer_bottom_address)
+        this.mBottomAddress = this.mView!!.findViewById(R.id.customer_bottom_address)
         this.mBottomAddress!!.setText(customerObject.bottomAddress)
 
-        this.mPhoneNumber = view.findViewById(R.id.customer_phone_number)
+        this.mPhoneNumber = this.mView!!.findViewById(R.id.customer_phone_number)
         this.mPhoneNumber!!.setText(customerObject.phoneNumber)
 
-        this.mSearchButton = view.findViewById(R.id.search_address)
+        this.mSearchButton = this.mView!!.findViewById(R.id.search_address)
         this.mSearchButton!!.setOnClickListener {
             searchButtonClickListener(this.mAddressNumber!!.text.toString())
         }
 
-        this.mEditButton = view.findViewById(R.id.customer_submit)
+        this.mEditButton = this.mView!!.findViewById(R.id.customer_submit)
         this.mEditButton!!.setOnClickListener {
             editButtonClickListener(
                 this.mName!!.text.toString()
@@ -94,7 +95,7 @@ class EditCustomerFragment : BaseFragment() {
         }
 
         setTitle("客先編集")
-        return view
+        return this.mView
     }
 
     //ツールバー右側に戻るボタンを追加する処理
@@ -105,28 +106,27 @@ class EditCustomerFragment : BaseFragment() {
     //アイコン押した時の処理
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.back_page){
-            closeSoftKeyboard()
+            closeSoftKeyboard(this.mView!!, requireActivity())
             replaceFragment(ShowCustomerFragment.newInstance(mId))
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun searchButtonClickListener(addressNumber: String) {
-        closeSoftKeyboard()
+        closeSoftKeyboard(this.mView!!, requireActivity())
         // 郵便番号桁数バリデーションチェック
         if (addressNumber.length != 7) {
-            AlertDialog.Builder(this.activity)
-                .setTitle("入力エラー")
-                .setMessage("7桁の郵便番号を入力して下さい")
-                .setPositiveButton("OK") { _, _ ->
-                }
-                .show()
+            this.eDialog = ErrorDialogFragment.newInstance(
+                "入力エラー",
+                "7桁の郵便番号を\n入力して下さい",
+                this
+            )
+            this.eDialog!!.show(parentFragmentManager, "dialog")
         } else {
             // 『0000000』の形式の郵便番号を『000-0000』に変換
             val sb = StringBuilder()
             sb.append(addressNumber)
             sb.insert(3, "-")
-            Log.d("TAG", "郵便番号の中身は$sb")
 
             val address = runBlocking {
                 searchAddressFromZipCode(sb.toString())
@@ -134,12 +134,12 @@ class EditCustomerFragment : BaseFragment() {
 
             // 郵便番号存在バリデーションチェック
             if (address == null) {
-                AlertDialog.Builder(this.activity)
-                    .setTitle("検索エラー")
-                    .setMessage("住所が取得できませんでした")
-                    .setPositiveButton("OK") { _, _ ->
-                    }
-                    .show()
+                this.eDialog = ErrorDialogFragment.newInstance(
+                    "検索エラー",
+                    "住所が取得できません",
+                    this
+                )
+                this.eDialog!!.show(parentFragmentManager, "dialog")
             } else {
                 val topAddress =
                     address.adminArea + address.locality + address.featureName
@@ -156,30 +156,28 @@ class EditCustomerFragment : BaseFragment() {
         , bottomAddress: String
         , phoneNumber: String
     ) {
-        closeSoftKeyboard()
+        closeSoftKeyboard(this.mView!!, requireActivity())
         // 客先名入力バリデーションチェック
         if (name == "") {
-            AlertDialog.Builder(this.activity)
-                .setTitle("入力エラー")
-                .setMessage("客先名を入力して下さい")
-                .setPositiveButton("OK") { _, _ ->
-                }
-                .show()
+            this.eDialog = ErrorDialogFragment.newInstance(
+                "入力エラー",
+                "客先名を入力して下さい",
+                this
+            )
+            this.eDialog!!.show(parentFragmentManager, "dialog")
         }
         // フリガナの全角カタカナバリデーションチェック
         else if (!howToRead.matches("^[\\u30A0-\\u30FF]+$".toRegex())) {
-            AlertDialog.Builder(this.activity)
-                .setTitle("入力エラー")
-                .setMessage("フリガナは全角カタカナで入力して下さい")
-                .setPositiveButton("OK") { _, _ ->
-                }
-                .show()
-
+            this.eDialog = ErrorDialogFragment.newInstance(
+                "入力エラー",
+                "フリガナは全角カタカナで\n入力して下さい",
+                this
+            )
+            this.eDialog!!.show(parentFragmentManager, "dialog")
             // 更新処理
         } else {
             realm = Realm.getDefaultInstance()
             val customerObject = co.findCustomerById(mId)
-            val section = dm.selectSection(howToRead)
 
             realm.beginTransaction()
 
@@ -189,7 +187,7 @@ class EditCustomerFragment : BaseFragment() {
             customerObject.topAddress = topAddress
             customerObject.bottomAddress = bottomAddress
             customerObject.phoneNumber = phoneNumber
-            customerObject.section = section
+            customerObject.section = SECTION_CHAR[howToRead.selectLineNumber()]
             Toast.makeText(activity as MainActivity, "変更が完了しました。", Toast.LENGTH_SHORT)
                 .show()
 
@@ -229,18 +227,15 @@ class EditCustomerFragment : BaseFragment() {
         return null
     }
 
-    /**
-     * キーボードを閉じる処理
-     */
-    private fun closeSoftKeyboard(){
-        val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-    }
-
     private val onBackListener = object : BackEventListener {
         override fun onBackClick() {
             replaceFragment(ShowCustomerFragment.newInstance(mId))
         }
+    }
+
+    override fun onErrorOkClick() {
+        super.onErrorOkClick()
+        this.eDialog!!.dismiss()
     }
 
 }

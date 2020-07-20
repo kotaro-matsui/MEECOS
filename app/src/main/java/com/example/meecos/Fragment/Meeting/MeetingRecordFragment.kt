@@ -17,7 +17,7 @@ import com.example.meecos.Dialog.CommonDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.R
 
-class MeetingRecordFragment : BaseFragment(), RecognitionListener, CommonDialogFragment.CommonDialogLisener {
+class MeetingRecordFragment : BaseFragment(), RecognitionListener, CommonDialogFragment.CommonDialogListener {
 
     private var sr: SpeechRecognizer? = null
 
