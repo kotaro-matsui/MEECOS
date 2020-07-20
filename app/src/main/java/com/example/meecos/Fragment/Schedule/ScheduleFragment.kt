@@ -1,6 +1,7 @@
 package com.example.meecos.Fragment.Schedule
 
 import android.app.AlarmManager
+import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -8,12 +9,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.DatePicker
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meecos.Activity.MainActivity
+import com.example.meecos.Dialog.DateDialogFragment
 import com.example.meecos.Dialog.EditOrDeleteFragment
+import com.example.meecos.Dialog.YearMonthPickerDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Fragment.Schedule.compactcalendar.CompactCalendarView
 import com.example.meecos.Fragment.Schedule.compactcalendar.Event
@@ -24,10 +29,7 @@ import com.example.meecos.RecyclerView.RecyclerViewHolder
 import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.Sort
-import java.sql.Time
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.Month
 import java.util.*
 
 
@@ -50,6 +52,12 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         val view = inflater.inflate(R.layout.fragment_schedule, container, false)
         setTitle("スケジュール")
 
+        val dateFormatForMonth = SimpleDateFormat("yyyy - MMM", Locale.getDefault())
+        val mYearMonth = view.findViewById<TextView>(R.id.selectedYearMonth)
+        mYearMonth.text = dateFormatForMonth.format(Date())
+        mYearMonth.setOnClickListener {
+            (activity as MainActivity).datePickDialog(mYearMonth,view)
+        }
         /*val calendarView = view.findViewById<CalendarView>(R.id.calender)*/
 
         //外部ライブラリのカレンダー使用
@@ -66,6 +74,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
             }
 
             override fun onMonthScroll(firstDayOfNewMonth: Date) {
+                mYearMonth.text = dateFormatForMonth.format(firstDayOfNewMonth)
             }
         })
 
@@ -80,8 +89,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
             .sort(names,sorts)
             .findAll()
 
-        /*カレンダー上の日付に、予定がある日は白丸がつく処理　今は開始日でしか判断できていない
-        * 最初にstartDateとendDateを取得し、あいだの日付すべてを取得して、その日数分だけloopを回す？*/
+        //カレンダー上の日付に、予定がある日は白丸がつく処理
         var ev: Event
         for(item in latestPlans){
             val sDate = item.startDate!!.time
@@ -97,7 +105,6 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
                 compactCalendarView.addEvent(ev)
             }
         }
-
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.adapter = RecyclerAdapter(
             (activity as MainActivity),
@@ -172,5 +179,12 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         } else {
             Log.d("debug", "null")
         }
+    }
+
+    //日付選択ダイアログを表示するメソッドを呼び出すクラス
+    private fun MainActivity.datePickDialog(textView: TextView,view:View) {
+        DateDialogFragment(textView, view)
+            .show(supportFragmentManager, textView::class.java.simpleName)
+
     }
 }

@@ -3,8 +3,10 @@ package com.example.meecos.Dialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
+import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.meecos.Activity.MainActivity
@@ -13,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_newplan.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
+
 
 /* 日付を入力する時に使用するinnerクラス
    DialogFragmentで日付を入力できるカレンダーを表示する

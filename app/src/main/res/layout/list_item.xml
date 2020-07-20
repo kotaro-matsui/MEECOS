@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     android:layout_margin="8dp"
-    android:foreground="?android:attr/selectableItemBackground">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/recordId"
@@ -43,12 +39,14 @@
             android:layout_weight="0.15"
             android:text=""
             android:textColor="@color/white" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="~"
+            android:text="@string/fromTo"
             android:textColor="@color/white"
             android:layout_weight="0.05"/>
+
         <TextView
             android:id="@+id/planEndDate"
             android:layout_width="0dp"
@@ -56,6 +54,7 @@
             android:text=""
             android:textColor="@color/white"
             android:layout_weight="0.3"/>
+
         <TextView
             android:id="@+id/planEndTime"
             android:layout_width="0dp"
@@ -74,5 +73,4 @@
             android:ellipsize="end"
             android:singleLine="true"/>
 
-    </LinearLayout>
 </LinearLayout>
