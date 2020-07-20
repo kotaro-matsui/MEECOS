@@ -6,11 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.UnderlineSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
@@ -39,7 +36,6 @@ class ShowCustomerFragment : BaseFragment() {
     var mAddress: TextView? = null
     var mPhoneNumber: TextView? = null
 
-    private var mBackButton: ImageButton? = null
     private var mEditButton: Button? = null
     private var mDeleteButton: Button? = null
 
@@ -48,12 +44,11 @@ class ShowCustomerFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_show_customer, container, false)
+        view.setBackEvent(onBackListener)
 
         val customerObject = co.findCustomerById(mId)
-
-        this.mBackButton = view.findViewById(R.id.back_list)
-        this.mBackButton!!.setOnClickListener(backButtonClickListener)
 
         this.mHowToRead = view.findViewById(R.id.customer_how_to_read)
         this.mHowToRead!!.text = customerObject!!.howToRead
@@ -83,8 +78,17 @@ class ShowCustomerFragment : BaseFragment() {
         return view
     }
 
-    private val backButtonClickListener = View.OnClickListener {
-        replaceFragment(CustomerFragment())
+    //ツールバー右側に＋ボタンを追加する処理
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.back_item, menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+    //アイコン押した時の処理
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.back_page){
+            replaceFragment(CustomerFragment())
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private val addressTextClickListener = View.OnClickListener {
@@ -110,14 +114,7 @@ class ShowCustomerFragment : BaseFragment() {
     }
 
     private val editButtonClickListener = View.OnClickListener {
-        AlertDialog.Builder(this.activity)
-            .setMessage("編集しますか？")
-            .setNegativeButton("cancel") { _, _ ->
-            }
-            .setPositiveButton("OK") { _, _ ->
-                replaceFragment(EditCustomerFragment.newInstance(mId))
-            }
-            .show()
+        replaceFragment(EditCustomerFragment.newInstance(mId))
     }
 
     private val deleteButtonClickListener = View.OnClickListener {
@@ -160,6 +157,12 @@ class ShowCustomerFragment : BaseFragment() {
         val uri = Uri.parse("tel:$num")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    private val onBackListener = object : BackEventListener {
+        override fun onBackClick() {
+            replaceFragment(CustomerFragment())
+        }
     }
 
 }
