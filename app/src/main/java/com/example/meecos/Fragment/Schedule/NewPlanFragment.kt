@@ -150,7 +150,7 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         var newId = -1
         //編集でない場合は最新のIDを取得し、+1する
         if(scheduleObj == null){
-            var maxId = realm.where(ScheduleObject::class.java).max("id")
+            val maxId = realm.where(ScheduleObject::class.java).max("id")
             if(maxId != null){
                 newId = maxId.toInt() + 1
             }
