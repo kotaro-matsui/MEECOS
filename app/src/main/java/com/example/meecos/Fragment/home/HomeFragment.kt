@@ -16,9 +16,22 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.ProgressBar
+import com.example.meecos.Fragment.Customer.CustomerFragment
 import com.example.meecos.Fragment.Meeting.MeetingRecordFragment
 
 class HomeFragment : BaseFragment() {
+
+    //　戻るボタンを制御するための真偽地
+    // trueなら戻る、falseなら戻らない
+    var backSwitch: Boolean = true
+
+    companion object {
+        fun newInstance(bs: Boolean): HomeFragment {
+            val fragment = HomeFragment()
+            fragment.backSwitch = bs
+            return fragment
+        }
+    }
 
     var mZipText: TextView? = null
     var mWeatherImage: ImageView? = null
@@ -33,6 +46,7 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+        view.setBackEvent(onBackListener)
         setTitle("MEECOS")
 
         this.mZipText = view.findViewById(R.id.zip_text)
@@ -82,5 +96,18 @@ class HomeFragment : BaseFragment() {
      */
     private val recordingButtonClickListener = View.OnClickListener {
         replaceFragment(MeetingRecordFragment())
+    }
+
+    // 現状、前画面での戻るボタンのイベントを、遷移先であるここで拾ってしまうため、登録画面→HOME画面のような遷移が起こる
+    //　実機でこの問題が起こらない場合は『replaceFragment(HomeFragment())』の1文でよい
+    private val onBackListener = object : BackEventListener {
+
+        override fun onBackClick() {
+            if (backSwitch) {
+                activity!!.finish()
+            } else {
+                backSwitch = true
+            }
+        }
     }
 }

@@ -65,3 +65,13 @@ fun String.drawUnderline(): Spannable {
     return t
 }
 
+/**
+ * 読み仮名が全角カタカナか、半角英数のみで構成されているかどうかを確かめるメソッド
+ * 不正な値の読み仮名の場合にtrueを返す
+ */
+fun String.isNotCorrectReadingKana(): Boolean {
+    return !this.matches("^[\\u30A0-\\u30FF|a-zA-Z0-9]+$".toRegex())
+}
+
+
+

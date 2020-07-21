@@ -9,9 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.meecos.Activity.MainActivity
-import com.example.meecos.Config.SECTION_CHAR
-import com.example.meecos.Config.closeSoftKeyboard
-import com.example.meecos.Config.selectLineNumber
+import com.example.meecos.Config.*
 import com.example.meecos.Dialog.ErrorDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
 import com.example.meecos.Model.CustomerObject
@@ -107,7 +105,7 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.back_page){
             closeSoftKeyboard(this.mView!!, requireActivity())
-            replaceFragment(ShowCustomerFragment.newInstance(mId))
+            replaceFragment(ShowCustomerFragment.newInstance(mId, false))
         }
         return super.onOptionsItemSelected(item)
     }
@@ -158,40 +156,43 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
     ) {
         closeSoftKeyboard(this.mView!!, requireActivity())
         // 客先名入力バリデーションチェック
-        if (name == "") {
-            this.eDialog = ErrorDialogFragment.newInstance(
-                "入力エラー",
-                "客先名を入力して下さい",
-                this
-            )
-            this.eDialog!!.show(parentFragmentManager, "dialog")
-        }
-        // フリガナの全角カタカナバリデーションチェック
-        else if (!howToRead.matches("^[\\u30A0-\\u30FF]+$".toRegex())) {
-            this.eDialog = ErrorDialogFragment.newInstance(
-                "入力エラー",
-                "フリガナは全角カタカナで\n入力して下さい",
-                this
-            )
-            this.eDialog!!.show(parentFragmentManager, "dialog")
-            // 更新処理
-        } else {
-            realm = Realm.getDefaultInstance()
-            val customerObject = co.findCustomerById(mId)
+        when {
+            name.isBlank() -> {
+                this.eDialog = ErrorDialogFragment.newInstance(
+                    "入力エラー",
+                    "客先名を入力して下さい",
+                    this
+                )
+                this.eDialog!!.show(parentFragmentManager, "dialog")
+            }
+            // フリガナの全角カタカナor半角英数バリデーションチェック
+            howToRead.isNotCorrectReadingKana() -> {
+                this.eDialog = ErrorDialogFragment.newInstance(
+                    "入力エラー",
+                    "フリガナは全角カタカナか\n半角英数で入力して下さい",
+                    this
+                )
+                this.eDialog!!.show(parentFragmentManager, "dialog")
+                // 更新処理
+            }
+            else -> {
+                realm = Realm.getDefaultInstance()
+                val customerObject = co.findCustomerById(mId)
 
-            realm.beginTransaction()
+                realm.beginTransaction()
 
-            customerObject!!.name = name
-            customerObject.howToRead = howToRead
-            customerObject.addressNumber = addressNumber
-            customerObject.topAddress = topAddress
-            customerObject.bottomAddress = bottomAddress
-            customerObject.phoneNumber = phoneNumber
-            customerObject.section = SECTION_CHAR[howToRead.selectLineNumber()]
-            Toast.makeText(activity as MainActivity, "変更が完了しました。", Toast.LENGTH_SHORT)
-                .show()
+                customerObject!!.name = name
+                customerObject.howToRead = howToRead
+                customerObject.addressNumber = addressNumber
+                customerObject.topAddress = topAddress
+                customerObject.bottomAddress = bottomAddress
+                customerObject.phoneNumber = phoneNumber
+                customerObject.section = SECTION_CHAR[howToRead.selectLineNumber()]
+                Toast.makeText(activity as MainActivity, "変更を反映しました。", Toast.LENGTH_SHORT)
+                    .show()
 
-            realm.commitTransaction()
+                realm.commitTransaction()
+            }
         }
     }
 
@@ -229,7 +230,7 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
 
     private val onBackListener = object : BackEventListener {
         override fun onBackClick() {
-            replaceFragment(ShowCustomerFragment.newInstance(mId))
+            replaceFragment(ShowCustomerFragment.newInstance(mId, false))
         }
     }
 

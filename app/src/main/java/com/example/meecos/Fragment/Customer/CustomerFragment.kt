@@ -14,6 +14,18 @@ import io.realm.Realm
 
 class CustomerFragment : BaseFragment() {
 
+    //　戻るボタンを制御するための真偽地
+    // trueなら戻る、falseなら戻らない
+    var backSwitch: Boolean = true
+
+    companion object {
+        fun newInstance(bs: Boolean): CustomerFragment {
+            val fragment = CustomerFragment()
+            fragment.backSwitch = bs
+            return fragment
+        }
+    }
+
     lateinit var realm: Realm
     private val dm = DataManager()
 
@@ -83,7 +95,7 @@ class CustomerFragment : BaseFragment() {
                 childPosition
             ) as Map<*, *>
 
-            replaceFragment(ShowCustomerFragment.newInstance(item["id"].toString().toInt()))
+            replaceFragment(ShowCustomerFragment.newInstance(item["id"].toString().toInt(), true))
             false
         }
 
@@ -130,8 +142,14 @@ class CustomerFragment : BaseFragment() {
     }
 
     private val onBackListener = object : BackEventListener {
+        // 現状、前画面での戻るボタンのイベントを、遷移先であるここで拾ってしまうため、登録画面→HOME画面のような遷移が起こる
+        //　実機でこの問題が起こらない場合は『replaceFragment(HomeFragment())』の1文でよい
         override fun onBackClick() {
-            replaceFragment(HomeFragment())
+            if (backSwitch) {
+                replaceFragment(HomeFragment.newInstance(false))
+            } else {
+                backSwitch = true
+            }
         }
     }
 
