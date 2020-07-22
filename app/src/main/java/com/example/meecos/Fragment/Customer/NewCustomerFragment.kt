@@ -61,7 +61,7 @@ class NewCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogListe
             searchButtonClickListener(this.mAddressNumber!!.text.toString())
         }
 
-        this.mCreateButton = this.mView!!.findViewById(R.id.customer_submit)
+        this.mCreateButton = this.mView!!.findViewById(R.id.customer_edit)
         this.mCreateButton!!.setOnClickListener {
             createButtonClickListener(
                 this.mName!!.text.toString()
@@ -151,7 +151,7 @@ class NewCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogListe
             howToRead.isNotCorrectReadingKana() -> {
                 this.eDialog = ErrorDialogFragment.newInstance(
                     "入力エラー",
-                    "フリガナは全角カタカナで\n入力して下さい",
+                    "フリガナは全角カタカナか\n半角英数で入力して下さい",
                     this
                 )
                 this.eDialog!!.show(parentFragmentManager, "dialog")
