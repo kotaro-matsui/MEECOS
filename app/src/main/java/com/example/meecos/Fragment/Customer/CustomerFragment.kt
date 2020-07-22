@@ -1,7 +1,6 @@
 package com.example.meecos.Fragment.Customer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ExpandableListView
 import android.widget.SimpleExpandableListAdapter
@@ -14,6 +13,18 @@ import io.realm.Realm
 
 
 class CustomerFragment : BaseFragment() {
+
+    //　戻るボタンを制御するための真偽地
+    // trueなら戻る、falseなら戻らない
+    var backSwitch: Boolean = true
+
+    companion object {
+        fun newInstance(bs: Boolean): CustomerFragment {
+            val fragment = CustomerFragment()
+            fragment.backSwitch = bs
+            return fragment
+        }
+    }
 
     lateinit var realm: Realm
     private val dm = DataManager()
@@ -84,7 +95,7 @@ class CustomerFragment : BaseFragment() {
                 childPosition
             ) as Map<*, *>
 
-            replaceFragment(ShowCustomerFragment.newInstance(item["id"].toString().toInt()))
+            replaceFragment(ShowCustomerFragment.newInstance(item["id"].toString().toInt(), true))
             false
         }
 
@@ -121,7 +132,6 @@ class CustomerFragment : BaseFragment() {
             ArrayList<HashMap<String, String>>()
         if (list.isNotEmpty()) {
             for (ci in list) {
-                Log.d("TAG", ci.name + "を振り分け中")
                 val child = HashMap<String, String>()
                 child["name"] = ci.name
                 child["id"] = ci.id
@@ -132,8 +142,14 @@ class CustomerFragment : BaseFragment() {
     }
 
     private val onBackListener = object : BackEventListener {
+        // 現状、前画面での戻るボタンのイベントを、遷移先であるここで拾ってしまうため、登録画面→HOME画面のような遷移が起こる
+        //　実機でこの問題が起こらない場合は『replaceFragment(HomeFragment())』の1文でよい
         override fun onBackClick() {
-            replaceFragment(HomeFragment())
+            if (backSwitch) {
+                replaceFragment(HomeFragment.newInstance(false))
+            } else {
+                backSwitch = true
+            }
         }
     }
 
