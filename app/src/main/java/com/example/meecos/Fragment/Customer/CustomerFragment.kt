@@ -141,9 +141,9 @@ class CustomerFragment : BaseFragment() {
         }
     }
 
+    // 現状、前画面での戻るボタンのイベントを、遷移先であるここで拾ってしまうため、登録画面→HOME画面のような遷移が起こる
+    //　実機でこの問題が起こらない場合は『replaceFragment(HomeFragment())』の1文でよい
     private val onBackListener = object : BackEventListener {
-        // 現状、前画面での戻るボタンのイベントを、遷移先であるここで拾ってしまうため、登録画面→HOME画面のような遷移が起こる
-        //　実機でこの問題が起こらない場合は『replaceFragment(HomeFragment())』の1文でよい
         override fun onBackClick() {
             if (backSwitch) {
                 replaceFragment(HomeFragment.newInstance(false))
@@ -152,8 +152,6 @@ class CustomerFragment : BaseFragment() {
             }
         }
     }
-
-
 
 //    override fun onDestroy() {
 //        super.onDestroy()
