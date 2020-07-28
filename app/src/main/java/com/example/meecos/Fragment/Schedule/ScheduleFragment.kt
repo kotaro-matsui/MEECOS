@@ -38,6 +38,7 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
     private lateinit var realm:Realm
     private lateinit var latestPlans:RealmResults<ScheduleObject>
     private var selectObject: ScheduleObject? = null
+    private lateinit var compactCalendarView:CompactCalendarView
 //通知用
     private var am: AlarmManager? = null
     private var pending: PendingIntent? = null
@@ -52,16 +53,18 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
         val view = inflater.inflate(R.layout.fragment_schedule, container, false)
         setTitle("スケジュール")
 
+
         val dateFormatForMonth = SimpleDateFormat("yyyy - MMM", Locale.getDefault())
         val mYearMonth = view.findViewById<TextView>(R.id.selectedYearMonth)
         mYearMonth.text = dateFormatForMonth.format(Date())
+        //カレンダー上のyyyy年 - MM月を押下した時の処理（未完成）
         mYearMonth.setOnClickListener {
             (activity as MainActivity).datePickDialog(mYearMonth,view)
         }
         /*val calendarView = view.findViewById<CalendarView>(R.id.calender)*/
 
         //外部ライブラリのカレンダー使用
-        val compactCalendarView = view.findViewById<CompactCalendarView>(R.id.compactcalendar_view)
+        compactCalendarView = view.findViewById(R.id.compactcalendar_view)
         compactCalendarView.setFirstDayOfWeek(Calendar.SUNDAY)
         compactCalendarView.setListener(object : CompactCalendarView.CompactCalendarViewListener {
             override fun onDayClick(dateClicked: Date) {
@@ -105,6 +108,8 @@ class ScheduleFragment : BaseFragment(), RecyclerViewHolder.ItemClickListener,
                 compactCalendarView.addEvent(ev)
             }
         }
+
+        //RecyclerViewの表示
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.adapter = RecyclerAdapter(
             (activity as MainActivity),

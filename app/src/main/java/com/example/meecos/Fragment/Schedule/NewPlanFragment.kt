@@ -34,6 +34,9 @@ import java.util.*
 class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
     //Realmの宣言
     private lateinit var realm:Realm
+    //日付フォーマット
+    private val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+    private val sdTimeFormat = SimpleDateFormat("HH:mm",Locale.JAPAN)
     //通知テスト用
     private var am: AlarmManager? = null
     private var pending: PendingIntent? = null
@@ -73,8 +76,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
         val contents = view.findViewById<EditText>(R.id.contents)
 
         //編集の場合、各項目に予め値が入っているようにする。新規の場合、現在日時が入っているようにする
-        val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
-        val sdTimeFormat = SimpleDateFormat("HH:mm",Locale.JAPAN)
         if(scheduleObj != null){
             val strStartDate = sdFormat.format(scheduleObj!!.startDate!!)
             val strEndDate = sdFormat.format(scheduleObj!!.endDate!!)
@@ -131,7 +132,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
             showToast("タイトルを入力してください")
             return
         }
-
         val sDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_DATE)
         val sTime = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
         val eDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE)
@@ -158,7 +158,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
             newId = scheduleObj!!.id!!
         }
         try {
-            val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
             val dStartDate = sdFormat.parse(startDate)
             val dEndDate = sdFormat.parse(endDate)
             realm.executeTransaction{ realm ->
@@ -212,12 +211,6 @@ class NewPlanFragment(var scheduleObj : ScheduleObject?) : BaseFragment() {
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis, pending
             )
-            // トーストで設定されたことを表示
-/*            Toast.makeText(
-                activity,
-                "alarm start", Toast.LENGTH_SHORT
-            ).show()*/
-            Log.d("debug", "start")
         }
     }
 

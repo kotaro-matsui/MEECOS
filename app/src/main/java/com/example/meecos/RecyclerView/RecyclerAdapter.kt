@@ -57,7 +57,6 @@ class RecyclerAdapter(private val context: Context,
                 itemClickListener.onItemClick(view, it.getChildAdapterPosition(view))
             }
         }
-
         return RecyclerViewHolder(mView)
     }
 
