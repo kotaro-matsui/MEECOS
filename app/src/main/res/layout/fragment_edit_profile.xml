@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,48 +16,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:textAlignment="center"
-            android:text="客先名"
+            android:text="名前"
             android:textSize="12sp"
             android:textColor="@color/white"/>
 
         <EditText
-            android:id="@+id/customer_name"
+            android:id="@+id/user_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:paddingStart="10sp"
             android:textColor="@color/white"
             android:background="@drawable/bottom_border_white"
-            android:inputType="text" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:textAlignment="center"
-            android:text="フリガナ"
-            android:textSize="12sp"
-            android:textColor="@color/white"/>
-
-        <EditText
-            android:id="@+id/customer_how_to_read"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:paddingStart="10sp"
-            android:textColor="@color/white"
-            android:background="@drawable/bottom_border_white"
-            android:hint="カタカナで入力"
-            android:inputType="text"
-            android:textColorHint="@color/clear_gray"/>
+            android:inputType="text"/>
 
     </LinearLayout>
 
@@ -78,7 +48,7 @@
             android:textColor="@color/white"/>
 
         <EditText
-            android:id="@+id/customer_address_number"
+            android:id="@+id/user_address_number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -95,8 +65,8 @@
             android:layout_width="0dp"
             android:layout_height="25dp"
             android:layout_weight="0.2"
-            android:layout_gravity="center"
             android:background="@color/black"
+            android:layout_gravity="center"
             android:text="検索"
             android:textColor="@color/white"/>
 
@@ -118,7 +88,7 @@
             android:textColor="@color/white"/>
 
         <EditText
-            android:id="@+id/customer_top_address"
+            android:id="@+id/user_top_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
@@ -145,7 +115,7 @@
             android:textColor="@color/white"/>
 
         <EditText
-            android:id="@+id/customer_bottom_address"
+            android:id="@+id/user_bottom_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
@@ -172,7 +142,7 @@
             android:textColor="@color/white"/>
 
         <EditText
-            android:id="@+id/customer_phone_number"
+            android:id="@+id/user_phone_number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
@@ -184,12 +154,12 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/customer_edit"
+        android:id="@+id/user_edit"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_gravity="end"
         android:background="@color/black"
-        android:text="登録"
+        android:text="編集完了"
         android:textColor="@color/white"/>
 
 </LinearLayout>

@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -22,6 +21,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.meecos.Config.PERMISSIONS_CODE
+import com.example.meecos.Fragment.Customer.CustomerFragment
 import com.example.meecos.Fragment.Meeting.MeetingNotesFragment
 import com.example.meecos.Fragment.Profile.ProfileFragment
 import com.example.meecos.Fragment.Schedule.ScheduleFragment
@@ -31,8 +31,6 @@ import com.google.android.material.navigation.NavigationView
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import com.example.meecos.Fragment.Customer.CustomerFragment
-import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(){
 
@@ -102,6 +100,10 @@ class MainActivity : AppCompatActivity(){
             PERMISSIONS_CODE)
     }
 
+    override fun onBackPressed() {
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return true
     }
@@ -114,7 +116,6 @@ class MainActivity : AppCompatActivity(){
     fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.addToBackStack(null)
         fragmentTransaction.replace(R.id.nav_host_fragment, fragment)
         fragmentTransaction.commit()
         drawer_layout.closeDrawer(GravityCompat.START)

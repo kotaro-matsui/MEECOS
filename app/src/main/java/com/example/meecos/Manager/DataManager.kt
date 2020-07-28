@@ -1,15 +1,37 @@
 package com.example.meecos.Manager
 
+import com.example.meecos.Config.selectLineNumber
 import com.example.meecos.Model.CustomerObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CustomerInfo(var name: String, var id: String)
 
 class DataManager {
 
-    //　親項目に振り分けるための、子項目を行ごとに作成してリストに入れ、配列にして返す
-    fun createChildList(): Array<MutableList<CustomerInfo>?> {
+    private val co = CustomerObject()
 
-        val co = CustomerObject()
+    /**
+     * customerObjectのnameを振り分けるために、必要な親項目のリストを作成する
+     */
+    fun createGroupList(): List<String>{
+        val list = mutableListOf<String>()
+        for (customer in co.fetchAllCustomerObject()) {
+            list.add(customer.section)
+        }
+        val groupList = ArrayList<String>(TreeSet(list))
+        // TreeSetで並び変えると#が先頭となるので、一度削除してから追加することでListの後ろに回す
+        if(groupList.contains("#")){
+            groupList.remove("#")
+            groupList.add("#")
+        }
+        return groupList
+    }
+
+    /**
+     * 親項目に振り分けるための、子項目を行ごとに作成してリストに入れ、配列にして返す
+     */
+    fun createChildList(): Array<MutableList<CustomerInfo>?> {
 
         val linesArray: Array<MutableList<CustomerInfo>?> = arrayOfNulls(11)
 
@@ -19,56 +41,13 @@ class DataManager {
         }
 
         for (customer in co.fetchAllCustomerObject()) {
-            val customerHowToRead = customer.howToRead
-            val customerName = customer.name
-            val customerId = customer.id.toString()
-
-            // 読み仮名未設定は#に振り分け
-            if (customerHowToRead == "") {
-                linesArray[10]?.add(CustomerInfo(customerName, customerId))
-            } else {
-                when (customerHowToRead.substring(0, 1)) {
-                    "ア", "イ", "ウ", "エ", "オ" -> {
-                        linesArray[0]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "カ", "キ", "ク", "ケ", "コ", "ガ", "ギ", "グ", "ゲ", "ゴ" -> {
-                        linesArray[1]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "サ", "シ", "ス", "セ", "ソ", "ザ", "ジ", "ズ", "ゼ", "ゾ" -> {
-                        linesArray[2]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "タ", "チ", "ツ", "テ", "ト", "ダ", "ヂ", "ヅ", "デ", "ド" -> {
-                        linesArray[3]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "ナ", "ニ", "ヌ", "ネ", "ノ" -> {
-                        linesArray[4]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "ハ", "ヒ", "フ", "ヘ", "ホ", "バ", "ビ", "ブ", "ベ", "ボ", "パ", "ピ", "プ", "ペ", "ポ" -> {
-                        linesArray[5]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "マ", "ミ", "ム", "メ", "モ" -> {
-                        linesArray[6]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "ヤ", "ユ", "ヨ" -> {
-                        linesArray[7]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "ラ", "リ", "ル", "レ", "ロ" -> {
-                        linesArray[8]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    "ワ", "ヲ", "ン" -> {
-                        linesArray[9]?.add(CustomerInfo(customerName, customerId))
-                    }
-                    else -> {
-                        linesArray[10]?.add(CustomerInfo(customerName, customerId))
-                    }
-                }
-            }
+            val howToRead = customer.howToRead
+            val name = customer.name
+            val id = customer.id.toString()
+            linesArray[howToRead.selectLineNumber()]?.add(CustomerInfo(name, id))
         }
-
         return linesArray
-
     }
-
 }
 
 

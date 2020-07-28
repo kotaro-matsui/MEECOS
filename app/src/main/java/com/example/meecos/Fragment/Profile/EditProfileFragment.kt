@@ -1,4 +1,4 @@
-package com.example.meecos.Fragment.Customer
+package com.example.meecos.Fragment.Profile
 
 import android.location.Address
 import android.location.Geocoder
@@ -9,34 +9,24 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.meecos.Activity.MainActivity
-import com.example.meecos.Config.*
+import com.example.meecos.Config.closeSoftKeyboard
 import com.example.meecos.Dialog.ErrorDialogFragment
 import com.example.meecos.Fragment.Base.BaseFragment
-import com.example.meecos.Model.CustomerObject
+import com.example.meecos.Model.ProfileObject
 import com.example.meecos.R
 import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogListener {
-    var mId: Int = 0
-
-    companion object {
-        fun newInstance(id: Int): EditCustomerFragment {
-            val fragment = EditCustomerFragment()
-            fragment.mId = id
-            return fragment
-        }
-    }
+class EditProfileFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogListener {
 
     lateinit var realm: Realm
 
-    private val co = CustomerObject()
+    private val po = ProfileObject()
 
     private var mView: View? = null
 
     var mName: EditText? = null
-    var mHowToRead: EditText? = null
     var mAddressNumber: EditText? = null
     var mTopAddress: EditText? = null
     var mBottomAddress: EditText? = null
@@ -52,39 +42,35 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        this.mView = inflater.inflate(R.layout.fragment_edit_customer, container, false)
+        this.mView = inflater.inflate(R.layout.fragment_edit_profile, container, false)
         this.mView!!.setBackEvent(onBackListener)
 
-        val customerObject = co.findCustomerById(mId)
+        val profileObject = po.findProfileById(1)
 
-        this.mName = this.mView!!.findViewById(R.id.customer_name)
-        this.mName!!.setText(customerObject!!.name)
+        this.mName = this.mView!!.findViewById(R.id.user_name)
+        this.mName!!.setText(profileObject!!.name)
 
-        this.mHowToRead = this.mView!!.findViewById(R.id.customer_how_to_read)
-        this.mHowToRead!!.setText(customerObject.howToRead)
+        this.mAddressNumber = this.mView!!.findViewById(R.id.user_address_number)
+        this.mAddressNumber!!.setText(profileObject.addressNumber)
 
-        this.mAddressNumber = this.mView!!.findViewById(R.id.customer_address_number)
-        this.mAddressNumber!!.setText(customerObject.addressNumber)
+        this.mTopAddress = this.mView!!.findViewById(R.id.user_top_address)
+        this.mTopAddress!!.setText(profileObject.topAddress)
 
-        this.mTopAddress = this.mView!!.findViewById(R.id.customer_top_address)
-        this.mTopAddress!!.setText(customerObject.topAddress)
+        this.mBottomAddress = this.mView!!.findViewById(R.id.user_bottom_address)
+        this.mBottomAddress!!.setText(profileObject.bottomAddress)
 
-        this.mBottomAddress = this.mView!!.findViewById(R.id.customer_bottom_address)
-        this.mBottomAddress!!.setText(customerObject.bottomAddress)
-
-        this.mPhoneNumber = this.mView!!.findViewById(R.id.customer_phone_number)
-        this.mPhoneNumber!!.setText(customerObject.phoneNumber)
+        this.mPhoneNumber = this.mView!!.findViewById(R.id.user_phone_number)
+        this.mPhoneNumber!!.setText(profileObject.phoneNumber)
 
         this.mSearchButton = this.mView!!.findViewById(R.id.search_address)
         this.mSearchButton!!.setOnClickListener {
             searchButtonClickListener(this.mAddressNumber!!.text.toString())
         }
 
-        this.mEditButton = this.mView!!.findViewById(R.id.customer_edit)
+        this.mEditButton = this.mView!!.findViewById(R.id.user_edit)
         this.mEditButton!!.setOnClickListener {
             editButtonClickListener(
                 this.mName!!.text.toString()
-                , this.mHowToRead!!.text.toString()
                 , this.mAddressNumber!!.text.toString()
                 , this.mTopAddress!!.text.toString()
                 , this.mBottomAddress!!.text.toString()
@@ -92,7 +78,7 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
             )
         }
 
-        setTitle("客先編集")
+        setTitle("プロフィール編集")
         return this.mView
     }
 
@@ -101,11 +87,12 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
         inflater.inflate(R.menu.back_item, menu)
         return super.onCreateOptionsMenu(menu, inflater)
     }
+
     //アイコン押した時の処理
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.back_page){
+        if (item.itemId == R.id.back_page) {
             closeSoftKeyboard(this.mView!!, requireActivity())
-            replaceFragment(ShowCustomerFragment.newInstance(mId,true))
+            replaceFragment(ProfileFragment())
         }
         return super.onOptionsItemSelected(item)
     }
@@ -148,53 +135,30 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
 
     private fun editButtonClickListener(
         name: String
-        , howToRead: String
         , addressNumber: String
         , topAddress: String
         , bottomAddress: String
         , phoneNumber: String
     ) {
         closeSoftKeyboard(this.mView!!, requireActivity())
-        // 客先名入力バリデーションチェック
-        when {
-            name.isBlank() -> {
-                this.eDialog = ErrorDialogFragment.newInstance(
-                    "入力エラー",
-                    "客先名を入力して下さい",
-                    this
-                )
-                this.eDialog!!.show(parentFragmentManager, "dialog")
-            }
-            // フリガナの全角カタカナor半角英数バリデーションチェック
-            howToRead.isNotCorrectReadingKana() -> {
-                this.eDialog = ErrorDialogFragment.newInstance(
-                    "入力エラー",
-                    "フリガナは全角カタカナか\n半角英数で入力して下さい",
-                    this
-                )
-                this.eDialog!!.show(parentFragmentManager, "dialog")
-                // 更新処理
-            }
-            else -> {
-                realm = Realm.getDefaultInstance()
-                val customerObject = co.findCustomerById(mId)
 
-                realm.beginTransaction()
+        realm = Realm.getDefaultInstance()
+        val customerObject = po.findProfileById(1)
 
-                customerObject!!.name = name
-                customerObject.howToRead = howToRead
-                customerObject.addressNumber = addressNumber
-                customerObject.topAddress = topAddress
-                customerObject.bottomAddress = bottomAddress
-                customerObject.phoneNumber = phoneNumber
-                customerObject.section = SECTION_CHAR[howToRead.selectLineNumber()]
-                Toast.makeText(activity as MainActivity, "変更を反映しました。", Toast.LENGTH_SHORT)
-                    .show()
+        realm.beginTransaction()
 
-                realm.commitTransaction()
-            }
-        }
+        customerObject!!.name = name
+        customerObject.addressNumber = addressNumber
+        customerObject.topAddress = topAddress
+        customerObject.bottomAddress = bottomAddress
+        customerObject.phoneNumber = phoneNumber
+        Toast.makeText(activity as MainActivity, "変更を反映しました。", Toast.LENGTH_SHORT)
+            .show()
+
+        realm.commitTransaction()
     }
+
+
 
     /**
      * 郵便番号から緯度と経度を取得し、対応するAddress取得する
@@ -230,7 +194,7 @@ class EditCustomerFragment : BaseFragment(), ErrorDialogFragment.ErrorDialogList
 
     private val onBackListener = object : BackEventListener {
         override fun onBackClick() {
-            replaceFragment(ShowCustomerFragment.newInstance(mId, false))
+            replaceFragment(ProfileFragment())
         }
     }
 

@@ -13,25 +13,23 @@ import androidx.fragment.app.DialogFragment
 import com.example.meecos.Config.*
 import com.example.meecos.R
 
-class CommonDialogFragment : DialogFragment() {
+class ErrorDialogFragment : DialogFragment() {
 
     var mOK: Button? = null
-    var mNO: Button? = null
     var mTitle: TextView? = null
     var mMessage: TextView? = null
 
-    var listener: CommonDialogListener? = null
+    var listener: ErrorDialogListener? = null
 
-    interface CommonDialogListener {
-        fun onOkClick () {}
-        fun onNoClick () {}
+    interface ErrorDialogListener {
+        fun onErrorOkClick () {}
     }
 
     companion object {
         fun newInstance(title: String,
                         message: String,
-                        listener: CommonDialogListener?): CommonDialogFragment {
-            val fragment = CommonDialogFragment()
+                        listener: ErrorDialogListener?): ErrorDialogFragment {
+            val fragment = ErrorDialogFragment()
 
             val bundle = Bundle()
             bundle.putString(TITLE, title)
@@ -46,7 +44,7 @@ class CommonDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_common, null)
+        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_error, null)
         val bundle = arguments
 
         this.mTitle = view.findViewById(R.id.title)
@@ -58,19 +56,10 @@ class CommonDialogFragment : DialogFragment() {
         }
 
         this.mOK = view.findViewById(R.id.ok)
-        this.mNO = view.findViewById(R.id.no)
 
         this.mOK!!.setOnClickListener {
             if (this.listener != null) {
-                this.listener!!.onOkClick()
-            } else {
-                this.dismiss()
-            }
-        }
-
-        this.mNO!!.setOnClickListener {
-            if (this.listener != null) {
-                this.listener!!.onNoClick()
+                this.listener!!.onErrorOkClick()
             } else {
                 this.dismiss()
             }

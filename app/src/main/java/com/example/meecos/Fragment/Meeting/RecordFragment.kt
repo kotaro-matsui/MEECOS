@@ -12,6 +12,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.meecos.Fragment.Base.BaseFragment
+import com.example.meecos.Fragment.Meeting.MeetingNotesFragment
+import com.example.meecos.Fragment.home.HomeFragment
 import com.example.meecos.R
 import java.io.File
 import java.time.LocalDateTime
@@ -31,7 +33,8 @@ class RecordFragment : BaseFragment(),View.OnClickListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_record, container, false)
+        val view = inflater.inflate(R.layout.fragment_record, container, false)
+        view.setBackEvent(onBackListener)
         setTitle("録音ページ")
 
         bt[0] = view.findViewById<Button>(R.id.recBtn)
@@ -101,6 +104,13 @@ class RecordFragment : BaseFragment(),View.OnClickListener,
                 mp!!.start()
             } catch (e: Exception) {
             }
+        }
+    }
+
+    // 戻るボタンを押したときの処理
+    private val onBackListener = object : BackEventListener {
+        override fun onBackClick() {
+            replaceFragment(MeetingNotesFragment.newInstance(false))
         }
     }
 }
